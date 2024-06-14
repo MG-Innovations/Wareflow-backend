@@ -54,7 +54,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.AWS_EC2_PUBLIC_IP }} << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.AWS_EC2_PUBLIC_IP }} << 'EOF'
             docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/lemonade:latest
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/caddy:latest
