@@ -3,16 +3,17 @@ services:
   api:
     container_name: lemonade
     build:
-      context: ./app  # Set the build context to the app directory where Dockerfile is
+      context: ./app
+      dockerfile: Dockerfile.fastapi  # Set the build context to the app directory where Dockerfile is
     image: lemonade
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/lemonade:ro
+      - ./app:/app
     networks:
       - caddy_network
           # Map the app directory correctly
-  postgres:
+  db:
     container_name: bacardi
     image: "postgres:14.5-alpine"
     environment:
@@ -22,9 +23,11 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql/data
-      - ./logs:/var/log/postgresql
+      - pg_data:/var/lib/postgresql/data
+      - pg_logs:/var/log/postgresql
     restart: unless-stopped
+    networks:
+      - caddy_network
   
   caddy:
     image: caddy:2-alpine
@@ -48,4 +51,6 @@ networks:
 
 volumes:
   caddy_data:
-  caddy_config:    
+  caddy_config: 
+  pg_data:
+  pg_logs:   
