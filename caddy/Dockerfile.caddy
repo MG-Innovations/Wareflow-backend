@@ -1,0 +1,12 @@
+# syntax=docker/dockerfile:1
+FROM caddy:2-alpine
+
+# Install timezone data
+RUN apk add --no-cache tzdata
+
+# Copy the Caddyfile and any scripts if needed
+COPY Caddyfile /etc/caddy/Caddyfile
+
+EXPOSE 80 443
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
