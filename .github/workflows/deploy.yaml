@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./app
-          dockerfile: ./app/Dockerfile.fastapi
+          file: ./app/Dockerfile.fastapi  # Correct key for Dockerfile path
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/lemonade:latest
 
@@ -34,9 +34,10 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./caddy
-          dockerfile: Dockerfile.caddy
+          file: ./caddy/Dockerfile.caddy  # Correct key for Dockerfile path
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/caddy:latest
+
 
   deploy:
     needs: build
