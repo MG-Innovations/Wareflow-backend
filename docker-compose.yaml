@@ -1,9 +1,23 @@
-version: "3"
+version: '3.8'
 services:
   api:
-    build: .
+    build:
+      context: ./app  # Set the build context to the app directory where Dockerfile is
     image: lemonade
     ports:
       - "8000:8000"
     volumes:
-      - .:/lemonade:ro
+      - ./app:/lemonade:ro  # Map the app directory correctly
+  postgres:
+    container_name: bacardi
+    image: "postgres:14.5-alpine"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./logs:/var/log/postgresql
+    restart: unless-stopped
