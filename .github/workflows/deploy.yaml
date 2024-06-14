@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./app
-          dockerfile: Dockerfile.fastapi
+          dockerfile: ./app/Dockerfile.fastapi
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/lemonade:latest
 
