@@ -1,17 +1,15 @@
-from typing import Annotated
-
 from fastapi import FastAPI
-import model
+from api import router
 from config import engine
-import router
+from api.products.models.product import Base
+
 app = FastAPI()
 
-
-model.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
-
-app.include_router(router.router,prefix="/product",tags=["product"])
+# Include the main router
+app.include_router(router)
