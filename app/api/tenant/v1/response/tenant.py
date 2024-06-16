@@ -1,11 +1,8 @@
-from typing import List, Optional, Generic, TypeVar
-from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
+from pydantic import BaseModel
+from typing import Optional, Any
 
-T = TypeVar('T')
-
-class Response (GenericModel, Generic[T]):
+class Response(BaseModel):
     code: str
-    status: str 
+    status: str
     message: str
-    result: Optional[T]  
+    result: Optional[Any] = None
