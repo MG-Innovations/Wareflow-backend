@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   api:
     container_name: lemonade
@@ -6,6 +7,8 @@ services:
       context: ./app
       dockerfile: Dockerfile.fastapi  # Set the build context to the app directory where Dockerfile is
     image: lemonade
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:
