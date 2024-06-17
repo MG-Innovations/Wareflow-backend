@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 
-from pydantic import  validator
-from pydantic_settings import BaseSettings
+from pydantic import  validator 
+from pydantic_settings import BaseSettings # type: ignore
 
 from dotenv import load_dotenv
 import os
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
         raise ValueError(v)
     
     POSTGRES_HOST: str = os.environ.get("POSTGRES_HOST")
-    POSTGRES_PORT: str = os.environ.get("POSTGRES_PORT")
+    POSTGRES_PORT: str = os.environ.get("POSTGRES_PORT")        
     POSTGRES_USER: str = os.environ.get("POSTGRES_USER")
     POSTGRES_PASSWORD: str = os.environ.get("POSTGRES_PASSWORD")
     POSTGRES_DB: str = os.environ.get("POSTGRES_DB")
