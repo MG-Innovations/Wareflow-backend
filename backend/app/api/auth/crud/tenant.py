@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
 from models.tenant import Tenant
 
-from app.core import security
+from core import security
 class CRUDTenant:
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[Tenant]:

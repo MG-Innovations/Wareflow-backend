@@ -1,9 +1,8 @@
 from typing import Annotated
 from starlette.middleware.cors import CORSMiddleware 
-from core.router import api_router
-from db.init_db import init_db
-from db.session import SessionLocal
-from core.config import settings
+from app.core.router import api_router
+from app.db.init_db import init_db
+from app.core.config import settings
 from fastapi import FastAPI 
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"

@@ -1,0 +1,36 @@
+# Use Python 3.11 as the base image
+FROM python:3.11 as python-base
+
+# This prevents Python from writing out pyc files
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1  
+# This ensures that Python output is not buffered, which is useful for logging
+
+# Set the working directory to /code/app
+WORKDIR /code/app
+
+# Copy poetry configuration files directly into /code
+COPY pyproject.toml poetry.lock /code/
+
+# Install Poetry, configure it to not create a virtual environment,
+# and install dependencies defined in pyproject.toml
+RUN pip install poetry && \
+    poetry config virtualenvs.create false && \
+    cd /code && \
+    poetry install --no-interaction --no-ansi
+
+# Copy the entire app directory into /code/app
+COPY ./app /code/app
+
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/code/
+
+# Expose port 8000
+EXPOSE 8000
+
+# Specify the command to start the application using Gunicorn with Uvicorn workers
+# Uncomment the following line for production
+# CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--bind", "0.0.0.0:8000"]
+
+# For development
+CMD ["uvicorn", "main:app", "--reload", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]

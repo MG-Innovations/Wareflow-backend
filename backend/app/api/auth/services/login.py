@@ -1,18 +1,17 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, Any, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException
 from app.api.auth.schemas.token import Token
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
 from app.api.auth.schemas.login import Login
-from auth.crud.user import CRUDUser 
+from app.api.auth.crud.user import CRUDUser 
 from app.core.config import settings
-router = APIRouter()
+router = APIRouter(prefix="/login")
 
 
-
-@router.post("/login/user/",response_model=Token)
-def loginUser(db:Session = Depends(deps.get_db),login:Login = Depends())->Any:
+@router.post("/user",response_model=Token)
+def loginUser(db:Session = Depends(deps.get_db),login:Login = Depends()):
     user = CRUDUser.authenticate(db, email=login.email, password=login.password)
 
     if not user:
@@ -29,8 +28,8 @@ def loginUser(db:Session = Depends(deps.get_db),login:Login = Depends())->Any:
     }
 
 
-@router.post("/login/tenant/",response_model=Token)
-def loginTenant(db:Session = Depends(deps.get_db),login:Login = Depends())->Any:
+@router.post("/tenant",response_model=Token)
+def loginTenant(db:Session = Depends(deps.get_db),login:Login = Depends()):
     user = CRUDUser.authenticate(db, email=login.email, password=login.password)
 
     if not user:

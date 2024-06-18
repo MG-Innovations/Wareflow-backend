@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine  # type: ignore
 from sqlalchemy.orm import sessionmaker  # type: ignore
 
-from core.config import settings
+from app.core.config import settings
 
 engine = create_engine(
     settings.POSTGRESQL_DATABASE_URI,

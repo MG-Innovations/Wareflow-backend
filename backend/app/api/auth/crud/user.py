@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
-from models.users import User
-
 from app.core import security
+from app.api.auth.models.user import User
 class CRUDUser:
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:

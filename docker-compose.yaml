@@ -4,7 +4,7 @@ services:
   api:
     container_name: lemonade
     build:
-      context: ./app
+      context: ./backend
       dockerfile: Dockerfile.fastapi  # Set the build context to the app directory where Dockerfile is
     image: lemonade
     env_file:
@@ -12,7 +12,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
+      - ./backend/app:/code/app
     networks:
       - caddy_network
           # Map the app directory correctly
