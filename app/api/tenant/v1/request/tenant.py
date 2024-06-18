@@ -1,7 +1,8 @@
 from typing import List, Optional, Union
 from datetime import datetime
-from pydantic import BaseModel , validator , EmailStr , Field
+from pydantic import BaseModel, validator, EmailStr, Field
 from typing_extensions import Literal
+
 
 class CreateTenantRequest(BaseModel):
     email: str
@@ -9,8 +10,8 @@ class CreateTenantRequest(BaseModel):
     slug: Optional[str]
     company_name: Optional[str]  # Add this if needed
 
+
 class UpdateTenantRequest(BaseModel):
     email: Optional[EmailStr]
     phone: Optional[str]
     slug: Optional[str]
-

@@ -2,26 +2,19 @@ from typing import List, Optional, Generic, TypeVar
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 
-T = TypeVar('T')
 
-class ProductSchema(BaseModel):
-    id: Optional[int]=None
-    name: Optional[str]=None
-    buying_price: Optional[int]=None
-    selling_price: Optional[int]=None
-    description: Optional[str]=None
-    image_url: Optional[str]=None
-
-    class Config:
-        orm_mode = True
-
-class RequestProduct(BaseModel):
-    parameter: ProductSchema = Field(...)
+class CreateProductSchema(BaseModel):
+    name: str
+    description: Optional[str]
+    buying_price: int
+    selling_price: Optional[int]
+    image_url: Optional[str]
 
 
-class Response (GenericModel, Generic[T]):
-    code: str
-    status: str 
-    message: str
-    result: Optional[T]           
-
+class UpdateProduct(BaseModel):
+    name: Optional[str]
+    description: Optional[str]
+    company: Optional[str]
+    image_url: Optional[str]
+    buying_price: Optional[int]
+    selling_price: Optional[int]
