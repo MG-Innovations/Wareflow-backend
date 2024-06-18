@@ -10,13 +10,14 @@ class UserBase(BaseModel):
     phone_number: str
     password: str
 
-class UserLogin(UserBase):
+class UserLogin(BaseModel):
     email: str
     password: str
 
 class UserCreate(UserBase):
     name: str
     email: str
+    tenant_id:UUID
     phone_number: str
     password: str
 

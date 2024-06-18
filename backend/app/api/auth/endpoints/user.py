@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, status, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
@@ -28,7 +28,6 @@ async def loginUser(db:Session = Depends(deps.get_db),login:UserLogin = Body(...
                 data={
                     "access_token": access_token,
                     "token_type": "Bearer",
-                    "tenant": base_user.dict()
                 }
         )
     except HTTPException as e:
@@ -56,7 +55,6 @@ async def signupUser(db:Session = Depends(deps.get_db),schema:UserCreate = Body(
             data={
                 "access_token": access_token,
                 "token_type": "Bearer",
-                "tenant": base_user.dict()
             }
         )
     except HTTPException as e:

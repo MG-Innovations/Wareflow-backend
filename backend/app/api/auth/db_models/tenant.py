@@ -14,7 +14,7 @@ class Tenant(Base):
     phone_number = Column(String, nullable=True)
     logo_url = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True),onupdate=func.now())
 
     # Relationship
     users = relationship("User", back_populates="tenant")

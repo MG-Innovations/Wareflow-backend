@@ -26,7 +26,6 @@ def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Bod
             data={
                 "access_token": access_token,
                 "token_type": "Bearer",
-                "tenant": base_tenant.dict()
             }
         )
     except HTTPException as e:
