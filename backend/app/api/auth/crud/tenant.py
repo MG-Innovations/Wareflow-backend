@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
-from models.tenant import Tenant
-
+from app.api.auth.models.tenant import Tenant
+from app.api.auth.schemas.signup import TenantSignupSchema
 from core import security
 class CRUDTenant:
 
@@ -9,11 +9,22 @@ class CRUDTenant:
         return db.query(Tenant).filter(Tenant.email == email).first()
 
     def authenticate(self, db: Session, email: str, password: str) -> Optional[Tenant]:
-        user = self.get_by_email(db,email=email)
-        if not user:
+        tenant = self.get_by_email(db,email=email)
+        if not tenant:
             return None;
-        if not security.verify_password(password, user.password):
+        if not security.verify_password(password, tenant.password):
             return None
-        return user
+        return tenant
+    
+    def create_tenant(self,db:Session,schema:TenantSignupSchema)->Optional[Tenant]:
+        tenant = Tenant(email=schema.email,
+                    name=schema.name,
+                    logo_url=schema.logo,
+                    password=security.get_password_hash(schema.password),
+                    phone_number=schema.phone_number)
+        db.add(tenant)
+        db.commit()
+        db.refresh(tenant)
+        return tenant
 
-# user = CRUDTenant(User)
+tenant = CRUDTenant()
