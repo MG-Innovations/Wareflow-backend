@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
-from app.api.auth.models.tenant import Tenant
-from app.api.auth.schemas.signup import TenantSignupSchema
+from app.api.auth.db_models.tenant import Tenant
+from app.api.auth.schemas.tenant import TenantLogin, TenantCreate
 from core import security
-class CRUDTenant:
+class TenantService:
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[Tenant]:
         return db.query(Tenant).filter(Tenant.email == email).first()
@@ -16,7 +16,7 @@ class CRUDTenant:
             return None
         return tenant
     
-    def create_tenant(self,db:Session,schema:TenantSignupSchema)->Optional[Tenant]:
+    def create_tenant(self,db:Session,schema:TenantCreate)->Optional[Tenant]:
         tenant = Tenant(email=schema.email,
                     name=schema.name,
                     logo_url=schema.logo,
@@ -27,4 +27,4 @@ class CRUDTenant:
         db.refresh(tenant)
         return tenant
 
-tenant = CRUDTenant()
+tenant = TenantService()

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.api.auth.services import login,signup
+from app.api.auth.endpoints import tenant, user
 api_router = APIRouter()
 
-api_router.include_router(login.router,tags=["login"])
-api_router.include_router(signup.router,tags=["signup"])
+api_router.include_router(user.router,tags=["user"])
+api_router.include_router(tenant.router,tags=["tenant"])

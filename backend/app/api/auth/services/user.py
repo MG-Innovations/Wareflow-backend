@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
 from app.core import security
-from app.api.auth.models.user import User
-from app.api.auth.schemas.signup import UserSignupSchema
-class CRUDUser():
+from app.api.auth.db_models.user import User
+from app.api.auth.schemas.user import UserCreate
+class UserService():
 
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(User.email == email).first()
@@ -16,16 +16,15 @@ class CRUDUser():
             return None
         return user
 
-    def create_user(self,db:Session,schema:UserSignupSchema)->Optional[User]:
+    def create_user(self,db:Session,schema:UserCreate)->Optional[User]:
         user = User(email=schema.email,
                     name=schema.name,
                     password=security.get_password_hash(schema.password),
-                    tenant_id=schema.tenant_id,
-                    phone_number=schema.phone_number)
+                    tenant_id=schema.tenant_id,)
         db.add(user)
         db.commit()
         db.refresh(user)
         return user
     
-user = CRUDUser()
+user = UserService()
 
