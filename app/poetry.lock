@@ -205,6 +205,21 @@ typer = ">=0.12.3"
 standard = ["fastapi", "uvicorn[standard] (>=0.15.0)"]
 
 [[package]]
+name = "fastapi-sqlalchemy"
+version = "0.2.1"
+description = "Adds simple SQLAlchemy support to FastAPI"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "FastAPI-SQLAlchemy-0.2.1.tar.gz", hash = "sha256:7a9d44e46cbc73c3f5ee8c444f7e0bcd3d01370a878740abd4cd4d2e900ce9af"},
+    {file = "FastAPI_SQLAlchemy-0.2.1-py3-none-any.whl", hash = "sha256:d3bfc6d9388a73a2c3726bc6bd7764cd82debfa71c16e3991c544b9701f48d96"},
+]
+
+[package.dependencies]
+SQLAlchemy = ">=1.2"
+starlette = ">=0.12.9"
+
+[[package]]
 name = "greenlet"
 version = "3.0.3"
 description = "Lightweight in-process concurrent programming"
@@ -1486,4 +1501,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "825315266a240c30e5895a38581c69d237f8e22dbabbed8ca6404c0e779dcc1a"
+content-hash = "f9962400304e036539ecd32d1dbf1aa1f19e9e3d9f19911508313170dcb46fcb"
