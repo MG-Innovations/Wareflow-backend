@@ -1,3 +1,5 @@
+from uuid import UUID
+from app.core.logging import logger
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
 from app.core import security
@@ -24,6 +26,12 @@ class UserService():
         db.add(user)
         db.commit()
         db.refresh(user)
+        return user
+    
+    def get_user(self, db:Session, id: UUID)->Optional[User]:
+        user = db.query(User).filter(User.id == id)
+        if user is None:
+            return None
         return user
     
 user = UserService()

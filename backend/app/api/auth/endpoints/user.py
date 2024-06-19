@@ -1,5 +1,7 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, Body
+from typing import Annotated
+from app.core.logging import logger
+from fastapi import APIRouter, Depends, HTTPException, Body, Header
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
@@ -7,6 +9,9 @@ from app.api.auth.services.user import user
 from app.api.auth.schemas.user import UserLogin, UserCreate
 from app.core.api_response import ApiResponse
 from app.core.config import settings
+from app.core.jwt import JWTBearer
+
+
 router = APIRouter(prefix="/user")
 
 
@@ -64,3 +69,31 @@ async def signupUser(db:Session = Depends(deps.get_db),schema:UserCreate = Body(
         )
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
+
+    
+@router.get("/",dependencies=[Depends(JWTBearer())])
+def get_tenant(db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBearer())):
+    try:
+        # Decode the JWT token from Header\
+        token = auth_token
+
+        payload = security.decode_access_token(token)
+        # Extract the UUID of the tenant
+        user_id = payload.get('sub')
+        
+        base_user = user.get_user(db, user_id)
+        if not base_user:
+            return ApiResponse.response_bad_request()
+        
+        return ApiResponse.response_ok(
+            data={
+                "user":"Gottacha",
+            }
+        )
+    except HTTPException as e:
+        return ApiResponse.response_bad_request(
+            status=e.status_code,
+            message=e.detail,
+        )
+    except Exception as e:
+        return ApiResponse.response_internal_server_error(message=str(e))    

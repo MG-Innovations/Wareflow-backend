@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, status, HTTPException, Body
+from fastapi import APIRouter, Depends, Header, status, HTTPException, Body
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
@@ -14,6 +14,32 @@ router = APIRouter(prefix="/tenant")
 def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Body(...)):
     try:
         base_tenant = tenant.create_tenant(db, schema=schema)
+        if not base_tenant:
+            return ApiResponse.response_bad_request()
+
+        return ApiResponse.response_created(
+            data={
+                "id": base_tenant.id.toString(),
+            }
+        )
+    except HTTPException as e:
+        return ApiResponse.response_bad_request(
+            status=e.status_code,
+            message=e.detail,
+        )
+    except Exception as e:
+        return ApiResponse.response_internal_server_error(message=str(e))
+    
+@router.get("/")
+def get_tenant(db: Session = Depends(deps.get_db)):
+    try:
+        # Decode the JWT token from Header\
+        token = authorization.split(" ")[1]
+
+        payload = security.decode_access_token(token)
+        # Extract the UUID of the tenant
+        tenant_id = payload.get('sub')
+        base_tenant = tenant.get_tenant(db, tenant_id)
         if not base_tenant:
             return ApiResponse.response_bad_request()
         
@@ -34,4 +60,4 @@ def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Bod
             message=e.detail,
         )
     except Exception as e:
-        return ApiResponse.response_internal_server_error(message=str(e))
+        return ApiResponse.response_internal_server_error(message=str(e))    

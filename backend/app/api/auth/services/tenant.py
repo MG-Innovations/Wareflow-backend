@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
 from app.api.auth.db_models.tenant import Tenant
@@ -26,5 +27,8 @@ class TenantService:
         db.commit()
         db.refresh(tenant)
         return tenant
+    
+    def get_tenant(self, db:Session, id: UUID)->Optional[Tenant]:
+        return db.query(Tenant).filter(Tenant.id == id).first()
 
 tenant = TenantService()
