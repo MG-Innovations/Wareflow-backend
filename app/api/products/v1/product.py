@@ -25,3 +25,27 @@ async def update_product(
     return Response(
         code="200", status="OK", message="Product updated", result=product
     ).dict(exclude_none=True)
+
+
+@product_router.get("/")
+async def get_products(db: Session = Depends(get_db)):
+    product = ProductService.getall_product(db)
+    return Response(
+        code="200", status="OK", message="All products fetched", result=product
+    ).dict(exclude_none=True)
+
+
+@product_router.get("/{product_id}")
+async def get_product(product_id: str, db: Session = Depends(get_db)):
+    product = ProductService.get_product(db, product_id)
+    return Response(
+        code="200", status="OK", message="All products fetched", result=product
+    ).dict(exclude_none=True)
+
+
+@product_router.delete("/{product_id}")
+async def delete_product(product_id: str, db: Session = Depends(get_db)):
+    ProductService.delete_product(db, product_id)
+    return Response(
+        code="200", status="OK", message="Product Deleted!!"
+    ).dict(exclude_none=True)

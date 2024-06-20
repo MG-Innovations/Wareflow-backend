@@ -10,10 +10,6 @@ class ProductService:
     def __init__(self): ...
 
     @staticmethod
-    def get_all_products(db: Session, skip: int = 0, limit: int = 10):
-        return db.query(Product).offset(skip).limit(limit).all()
-
-    @staticmethod
     def create_product(db: Session, product: CreateProductSchema):
         print("Here")
         _product = Product(
@@ -23,6 +19,11 @@ class ProductService:
             selling_price=product.selling_price,
             description=product.description,
             image_url=product.image_url,
+            company=product.company,
+            created_by=uuid.uuid4(),
+            updated_by=uuid.uuid4(),
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
         )
         print(_product)
         db.add(_product)
@@ -30,10 +31,11 @@ class ProductService:
         db.refresh(_product)
         return _product
 
+    @staticmethod
     def update_product(db: Session, product_id: str, product_request: UpdateProduct):
         product = db.query(Product).filter(Product.id == product_id).first()
-        print(product)
-        print(product_request)
+        # print(product)
+        # print(product_request)
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
 
@@ -47,7 +49,28 @@ class ProductService:
             product.buying_price = product_request.buying_price
         if product_request.selling_price is not None:
             product.selling_price = product_request.selling_price
+        if product_request.company is not None:
+            product.company = product_request.company
 
+        product.updated_at = datetime.datetime.utcnow()
+        product.updated_by = uuid.uuid4()
         db.commit()
         db.refresh(product)
         return product
+
+    @staticmethod
+    def getall_product(db: Session, skip: int = 0, limit: int = 10):
+        return db.query(Product).offset(skip).limit(limit).all()
+
+    @staticmethod
+    def get_product(db: Session, product_id: str):
+        return db.query(Product).filter(Product.id == product_id).first()
+
+    @staticmethod
+    def delete_product(db: Session, product_id: str):
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        db.delete(Product)
+        db.commit()

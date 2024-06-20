@@ -9,6 +9,7 @@ class CreateProductSchema(BaseModel):
     buying_price: int
     selling_price: Optional[int]
     image_url: Optional[str]
+    company: Optional[str]
 
 
 class UpdateProduct(BaseModel):
