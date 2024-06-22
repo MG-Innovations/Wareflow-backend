@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Start SSH Agent and add key
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -23,7 +20,8 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_PUBLIC_IP }} << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_PUBLIC_IP }} << 'EOF'
+            
             cd ~/Wareflow-backend
             git checkout main
             git pull
@@ -32,4 +30,3 @@ jobs:
             docker-compose build
             docker-compose up -d
           EOF
-        shell: /bin/bash
