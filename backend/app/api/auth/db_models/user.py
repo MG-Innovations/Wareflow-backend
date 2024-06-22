@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from app.db.base import Base
+from app.db.base_class import Base
 from sqlalchemy.sql import func
 
 class User(Base):
@@ -18,3 +18,5 @@ class User(Base):
 
     # Relationship
     tenant = relationship("Tenant", back_populates="users")
+    created_products = relationship("Product", back_populates="created_by")
+    updated_products = relationship("Product", back_populates="updated_by")
