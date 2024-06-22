@@ -18,7 +18,7 @@ class ApiResponse:
             "message": message,
             "status_code": code,
             "success": success,
-            "data": data,
+            "data": data.dict(),
             "paginator": paginator,
         }
         return JSONResponse(content=data, status_code=code)

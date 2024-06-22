@@ -8,19 +8,15 @@ class TenantBase(BaseModel):
     name: str
     email: str
     phone_number: str
-    logo:Optional[str]
-    password: str
-
-class TenantLogin(TenantBase):
-    email: str
-    password: str
-    
+    logo_url:Optional[str]    
 class TenantCreate(TenantBase):
     name: str
     email: str
     phone_number: str
-    password: str
-    logo:Optional[str]
+    logo_url:Optional[str]
+
+    class Config:
+        from_attributes = True
 
 class TenantDelete(TenantBase):
     id: UUID  #I want UUID here

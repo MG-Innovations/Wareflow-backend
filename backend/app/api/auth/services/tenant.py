@@ -2,7 +2,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from typing import Any, Dict, Optional, Union
 from app.api.auth.db_models.tenant import Tenant
-from app.api.auth.schemas.tenant import TenantLogin, TenantCreate
+from app.api.auth.schemas.tenant import TenantCreate
 from core import security
 class TenantService:
 
@@ -20,8 +20,7 @@ class TenantService:
     def create_tenant(self,db:Session,schema:TenantCreate)->Optional[Tenant]:
         tenant = Tenant(email=schema.email,
                     name=schema.name,
-                    logo_url=schema.logo,
-                    password=security.get_password_hash(schema.password),
+                    logo_url=schema.logo_url,
                     phone_number=schema.phone_number)
         db.add(tenant)
         db.commit()

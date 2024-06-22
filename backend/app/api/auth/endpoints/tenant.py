@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Header, status, HTTPException, Body
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
-from app.api.auth.schemas.tenant import TenantLogin, TenantCreate
+from app.api.auth.schemas.tenant import  TenantCreate
 from app.api.auth.services.tenant import tenant
 from app.core.config import settings
 from app.core.api_response import ApiResponse
@@ -18,9 +18,7 @@ def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Bod
             return ApiResponse.response_bad_request()
 
         return ApiResponse.response_created(
-            data={
-                "id": base_tenant.id.toString(),
-            }
+            data= TenantCreate.from_orm(base_tenant)
         )
     except HTTPException as e:
         return ApiResponse.response_bad_request(

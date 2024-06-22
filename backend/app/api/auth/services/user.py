@@ -22,6 +22,7 @@ class UserService():
         user = User(email=schema.email,
                     name=schema.name,
                     password=security.get_password_hash(schema.password),
+                    phone_number=schema.phone_number,
                     tenant_id=schema.tenant_id,)
         db.add(user)
         db.commit()
@@ -32,7 +33,7 @@ class UserService():
         user = db.query(User).filter(User.id == id)
         if user is None:
             return None
-        return user
+        return user.limit(1)
     
 user = UserService()
 
