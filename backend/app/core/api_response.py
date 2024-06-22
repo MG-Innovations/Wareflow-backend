@@ -1,5 +1,5 @@
 from typing import Any, Dict, List
-
+from app.core.custom_json_encode import json_encoder
 from fastapi.responses import JSONResponse
 
 
@@ -18,7 +18,7 @@ class ApiResponse:
             "message": message,
             "status_code": code,
             "success": success,
-            "data": data.dict(),
+            "data":json_encoder(data),
             "paginator": paginator,
         }
         return JSONResponse(content=data, status_code=code)
@@ -37,7 +37,7 @@ class ApiResponse:
             "message": message,
             "status_code": code,
             "success": success,
-            "data": data,
+            "data": json_encoder(data),
             "paginator": paginator,
         }
         return JSONResponse(content=data, status_code=code)
