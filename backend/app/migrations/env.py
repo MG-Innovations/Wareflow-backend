@@ -19,7 +19,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from app.db.base import Base  # Import your models' Base metadata
+from app.db.base_class import Base  # Import your models' Base metadata
 target_metadata = Base.metadata
 
 # Read database URL from the environment variable
