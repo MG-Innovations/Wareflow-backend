@@ -27,7 +27,7 @@ class UserCreate(UserBase):
         orm_mode = True
         from_attributes = True
 
-class UserGet(UserBase):
+class UserGet(BaseModel):
     id: UUID
     name: str
     email: str

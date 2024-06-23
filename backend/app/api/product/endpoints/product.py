@@ -16,7 +16,7 @@ router = APIRouter(prefix="/product")
 def create_company(company: CompanyBase, db: Session = Depends(get_db)):
     try:
         new_company = product_service.create_company(db, company)
-        return ApiResponse.response_ok(data=CompanyBase.from_orm(new_company))
+        return ApiResponse.response_ok(data=CompanyBase.model_validate(new_company).model_dump())
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
     except Exception as e:

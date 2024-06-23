@@ -4,7 +4,7 @@ from uuid import UUID
 
 
 class TenantBase(BaseModel):
-    id:  UUID
+    id:  Optional[UUID]
     name: str
     email: str
     phone_number: str
@@ -19,7 +19,7 @@ class TenantGetResponse(TenantBase):
     logo_url:Optional[str]
     class Config:
         from_attributes = True   
-class TenantCreate(TenantBase):
+class TenantCreate(BaseModel):
     name: str
     email: str
     phone_number: str

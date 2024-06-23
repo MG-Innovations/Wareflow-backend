@@ -30,10 +30,10 @@ class UserService():
         return user
     
     def get_user(self, db:Session, id: UUID)->Optional[User]:
-        user = db.query(User).filter(User.id == id)
+        user = db.query(User).filter(User.id == id).first()
         if user is None:
             return None
-        return user.limit(1)
+        return user
     
 user = UserService()
 

@@ -19,7 +19,7 @@ def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Bod
             return ApiResponse.response_bad_request()
 
         return ApiResponse.response_created(
-            data= TenantCreate.from_orm(base_tenant)
+            data= TenantGetResponse.model_validate(base_tenant).model_dump()
         )
     except HTTPException as e:
         return ApiResponse.response_bad_request(
