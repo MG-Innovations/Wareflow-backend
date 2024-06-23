@@ -7,7 +7,7 @@ from app.api.product.db_models.product import Product
 from app.api.product.db_models.product_type import ProductType
 from app.api.product.db_models.company import Company
 from app.api.orders.db_models.customer import Customer
-from app.api.orders.db_models.orders import Order
+from app.api.orders.db_models.order import Order
 from app.api.orders.db_models.order_item import OrderItem
 
 
