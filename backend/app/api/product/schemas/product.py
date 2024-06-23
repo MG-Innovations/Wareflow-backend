@@ -10,23 +10,33 @@ class CompanyBase(BaseModel):
     phone_number: str
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
-class CompanyGet(CompanyBase):
-    id: UUID  #I want UUID here
+class CompanyGet(BaseModel):
+    id: UUID  #I want UUID 
 
-class CompanyDelete(CompanyBase):
+class CompanyGetResponse(BaseModel):
+    id: UUID 
+    name: str
+    email: str
+    phone_number: str
+    class Config:
+        from_attributes = True
+
+class CompanyDelete(BaseModel):
     id: UUID  #I want UUID here
 
 class ProductType(BaseModel):
     name: str
-    discrption: str
+    description: str
+     
+    class Config:
+        from_attributes = True
 
-class ProductTypeGet(ProductType):
+class ProductTypeGet(BaseModel):
     id: UUID  #I want UUID here
 
-class ProductTypeDelete(ProductType):
+class ProductTypeDelete(BaseModel):
     id: UUID  #I want UUID here
 
 class Product(BaseModel):
@@ -35,13 +45,16 @@ class Product(BaseModel):
     buying_price: float
     selling_price: float
     image: str
-    stock: str
+    stock: int
     tenant_id: UUID
     company_id: UUID
     product_type_id: UUID
 
-class ProductGet(Product):
+    class Config:
+        from_attributes = True
+
+class ProductGet(BaseModel):
     id: UUID  #I want UUID here
 
-class ProductDelete(Product):
+class ProductDelete(BaseModel):
     id: UUID  #I want UUID here
