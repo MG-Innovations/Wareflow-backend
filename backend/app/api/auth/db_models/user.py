@@ -16,7 +16,4 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # Relationship
-    tenant = relationship("Tenant", back_populates="users")
-    created_products = relationship("Product", back_populates="created_by")
-    updated_products = relationship("Product", back_populates="updated_by")
+       

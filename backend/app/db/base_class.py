@@ -10,5 +10,4 @@ class Base:
     # Generate __tablename__ automatically
     @declared_attr
     def __tablename__(cls) -> str:
-        logger("using table %s" % cls.__tablename__)
         return cls.__name__.lower()

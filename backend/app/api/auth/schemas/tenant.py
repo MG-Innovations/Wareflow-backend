@@ -3,24 +3,30 @@ from pydantic import BaseModel
 from uuid import UUID
 
 
-
 class TenantBase(BaseModel):
+    id:  Optional[UUID]
     name: str
     email: str
     phone_number: str
-    logo:Optional[str]
-    password: str
+    logo_url:Optional[str]    
 
-class TenantLogin(TenantBase):
-    email: str
-    password: str
-    
-class TenantCreate(TenantBase):
+
+class TenantGetResponse(TenantBase):
+    id: UUID
     name: str
     email: str
     phone_number: str
-    password: str
-    logo:Optional[str]
+    logo_url:Optional[str]
+    class Config:
+        from_attributes = True   
+class TenantCreate(BaseModel):
+    name: str
+    email: str
+    phone_number: str
+    logo_url:Optional[str]
+
+    class Config:
+        from_attributes = True
 
 class TenantDelete(TenantBase):
     id: UUID  #I want UUID here

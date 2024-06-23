@@ -1,16 +1,17 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, Header, status, HTTPException, Body
+from uuid import UUID
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
-from app.api.auth.schemas.tenant import TenantLogin, TenantCreate
+from app.api.auth.schemas.tenant import  TenantCreate, TenantGetResponse
 from app.api.auth.services.tenant import tenant
 from app.core.config import settings
 from app.core.api_response import ApiResponse
 
 router = APIRouter(prefix="/tenant")
 
-@router.post("/signup")
+@router.post("/create")
 def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Body(...)):
     try:
         base_tenant = tenant.create_tenant(db, schema=schema)
@@ -18,9 +19,7 @@ def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Bod
             return ApiResponse.response_bad_request()
 
         return ApiResponse.response_created(
-            data={
-                "id": base_tenant.id.toString(),
-            }
+            data= TenantGetResponse.model_validate(base_tenant).model_dump()
         )
     except HTTPException as e:
         return ApiResponse.response_bad_request(
@@ -30,29 +29,15 @@ def signup_tenant(db: Session = Depends(deps.get_db), schema: TenantCreate = Bod
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
     
-@router.get("/")
-def get_tenant(db: Session = Depends(deps.get_db)):
+@router.get("/{tenant_id}")
+def get_tenant(tenant_id: UUID,db: Session = Depends(deps.get_db),):
     try:
-        # Decode the JWT token from Header\
-        token = authorization.split(" ")[1]
-
-        payload = security.decode_access_token(token)
-        # Extract the UUID of the tenant
-        tenant_id = payload.get('sub')
         base_tenant = tenant.get_tenant(db, tenant_id)
         if not base_tenant:
             return ApiResponse.response_bad_request()
         
-        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = security.create_access_token(
-            base_tenant.id, expires_delta=access_token_expires
-        )
-
-        return ApiResponse.response_created(
-            data={
-                "access_token": access_token,
-                "token_type": "Bearer",
-            }
+        return ApiResponse.response_ok(
+            data=TenantGetResponse.model_validate(base_tenant).model_dump()
         )
     except HTTPException as e:
         return ApiResponse.response_bad_request(

@@ -6,20 +6,18 @@ import uuid
 from app.db.base_class import Base
 from sqlalchemy.sql import func
 
-class Product(Base):
-    __tablename__ = "Product"
+class Order(Base):
+    __tablename__ = "Order"
     id = Column(UUID, primary_key=True, index=True, default=uuid.uuid4,)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    buying_price = Column(Float, nullable=False)
-    selling_price = Column(Float,nullable=False)
-    image = Column(String,nullable=True)
-    stock = Column(Integer,nullable=False)
     tenant_id = Column(UUID,ForeignKey('Tenant.id'),nullable=False)
-    company_id = Column(UUID, ForeignKey('Company.id'),nullable=False)
-    product_type_id = Column(UUID, ForeignKey('ProductType.id'),nullable=False)
+    slug = Column(String, nullable=False)
+    customer_id = Column(UUID,ForeignKey('Customer.id'),nullable=False)
     created_by = Column(UUID, ForeignKey('User.id'),nullable=False)
     updated_by = Column(UUID, ForeignKey('User.id'),nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True),onupdate=func.now())
+    
+
+    # Relationship
+    order_items = relationship("OrderItem", back_populates="order")
 
