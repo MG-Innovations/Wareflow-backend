@@ -16,7 +16,7 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     name: str
     email: str
     tenant_id:UUID
@@ -24,7 +24,6 @@ class UserCreate(UserBase):
     password: str
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 class UserGet(BaseModel):
