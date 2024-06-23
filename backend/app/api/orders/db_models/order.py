@@ -10,7 +10,7 @@ class Order(Base):
     __tablename__ = "Order"
     id = Column(UUID, primary_key=True, index=True, default=uuid.uuid4,)
     tenant_id = Column(UUID,ForeignKey('Tenant.id'),nullable=False)
-    slug = Column(String, nullable=False)
+    order_value = Column(Float, nullable=False)
     customer_id = Column(UUID,ForeignKey('Customer.id'),nullable=False)
     created_by = Column(UUID, ForeignKey('User.id'),nullable=False)
     updated_by = Column(UUID, ForeignKey('User.id'),nullable=False)
