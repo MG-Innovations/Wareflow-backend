@@ -7,9 +7,9 @@ from datetime import datetime
 
 class OrderBase(BaseModel):
     id: UUID
-    name: str
     order_items: list[OrderItemBase]
     customer_id: UUID
+    order_value: float
     tenant_id: UUID
     created_by: UUID
     updated_by: UUID
