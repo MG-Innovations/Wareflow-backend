@@ -2,12 +2,12 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.api.payment.db_models.payment import Payment
-from app.api.payment.schemas.payment import Payment , PaymentDelete , PaymentGet , PaymentGetResponse , PaymentUpdate
+from app.api.payment.schemas.payment import Payment as BaseProduct , PaymentDelete , PaymentGet , PaymentGetResponse , PaymentUpdate
 
 class PaymentService:
 
-    def create_payment(self, db: Session, payment: Payment, user_id: UUID) -> Payment:
-        db_payment = Payment(**payment.dict(),user_id=user_id)
+    def create_payment(self, db: Session, payment: BaseProduct, user_id: UUID) -> Payment:
+        db_payment = Payment(**payment.dict(),user_id=user_id , created_by=user_id , updated_by=user_id)
         db.add(db_payment)
         db.commit()
         db.refresh(db_payment)

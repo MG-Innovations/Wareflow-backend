@@ -64,7 +64,7 @@ def delete_payment(payment_id: UUID, db: Session = Depends(get_db)):
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
 
-@router.get("/payment/{tenant_id}", dependencies=[Depends(JWTBearer())])
+@router.get("/payment/tenant/{tenant_id}", dependencies=[Depends(JWTBearer())])
 def get_all_payments_for_tenant(tenant_id: UUID , db: Session = Depends(get_db)):
     try:
         payments = payment_service.get_all_payment_by_tenant_id(db, tenant_id)
@@ -76,7 +76,7 @@ def get_all_payments_for_tenant(tenant_id: UUID , db: Session = Depends(get_db))
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
     
-@router.get("/payment/{order_id}", dependencies=[Depends(JWTBearer())])
+@router.get("/payment/order/{order_id}", dependencies=[Depends(JWTBearer())])
 def get_all_payments_for_order(order_id: UUID , tenant_id: UUID ,  db: Session = Depends(get_db)):
     try:
         payments = payment_service.get_all_payment_by_order_id(db, order_id , tenant_id)
