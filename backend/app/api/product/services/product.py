@@ -50,8 +50,8 @@ class ProductService:
             return product_type_id
         return None
     
-    def create_product(self, db: Session, product: ProductSchema , user_id) -> Product:
-        db_product = Product(**product.dict(),created_by=user_id, updated_by=user_id)
+    def create_product(self, db: Session, product: ProductSchema , user_id,tenant_id) -> Product:
+        db_product = Product(**product.model_dump(),tenant_id=tenant_id,created_by=user_id, updated_by=user_id)
         db.add(db_product)
         db.commit()
         db.refresh(db_product)

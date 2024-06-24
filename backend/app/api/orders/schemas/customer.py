@@ -17,8 +17,7 @@ class CustomerBase(BaseModel):
 
 class CustomerCreate(BaseModel):
     name: str
-    phone_number: str
-    tenant_id: UUID        
+    phone_number: str       
 
 class CustomerCreateInDb(BaseModel):
     name:str

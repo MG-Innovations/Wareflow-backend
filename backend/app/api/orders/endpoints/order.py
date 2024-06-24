@@ -24,12 +24,14 @@ async def create(db:Session = Depends(deps.get_db),data:OrderCreate = Body(...),
 
         payload = security.decode_access_token(token)
         # Extract the UUID of the tenant
-        user_id = payload.get('sub')
+        user_id = payload.get('user_id')
+
+        tenant_id = payload.get('tenant_id')
         
         order_db_base = OrderCreateInDb(
             customer_id = data.customer_id,
             order_value = data.order_value,
-            tenant_id = data.tenant_id,
+            tenant_id = tenant_id,
             created_by = user_id,
             updated_by = user_id
         )
@@ -39,7 +41,7 @@ async def create(db:Session = Depends(deps.get_db),data:OrderCreate = Body(...),
                 product_id=item.product_id,
                 quantity=item.quantity,
                 price=item.price,
-                tenant_id=data.tenant_id
+                tenant_id=tenant_id
             ) for item in data.order_items
         ]
     
@@ -49,7 +51,7 @@ async def create(db:Session = Depends(deps.get_db),data:OrderCreate = Body(...),
         if not base_order:
             return ApiResponse.response_bad_request()
         
-        return ApiResponse.response_ok(
+        return ApiResponse.response_created(
                 data=OrderBase.model_validate(base_order).model_dump(),
         )
     except HTTPException as e:

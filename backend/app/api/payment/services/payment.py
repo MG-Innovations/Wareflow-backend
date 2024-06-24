@@ -6,8 +6,8 @@ from app.api.payment.schemas.payment import Payment as BaseProduct , PaymentDele
 
 class PaymentService:
 
-    def create_payment(self, db: Session, payment: BaseProduct, user_id: UUID) -> Payment:
-        db_payment = Payment(**payment.dict(),user_id=user_id , created_by=user_id , updated_by=user_id)
+    def create_payment(self, db: Session, payment: BaseProduct, user_id: UUID, tenant_id:UUID) -> Payment:
+        db_payment = Payment(**payment.model_dump(),tenant_id=tenant_id,user_id=user_id , created_by=user_id , updated_by=user_id)
         db.add(db_payment)
         db.commit()
         db.refresh(db_payment)
