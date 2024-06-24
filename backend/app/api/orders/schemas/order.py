@@ -32,7 +32,6 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     order_value: float
     customer_id: UUID
-    tenant_id: UUID
     order_items: list[OrderItemCreateApi]    
 
 class OrderCreateInDb(BaseModel):

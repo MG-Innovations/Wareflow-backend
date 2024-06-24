@@ -27,7 +27,7 @@ async def loginUser(db:Session = Depends(deps.get_db),login:UserLogin = Body(...
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         
         access_token = security.create_access_token(
-                base_user.id, expires_delta=access_token_expires
+                base_user.id,base_user.tenant_id,expires_delta=access_token_expires
             )
     
         return ApiResponse.response_ok(

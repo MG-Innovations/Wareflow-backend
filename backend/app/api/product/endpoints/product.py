@@ -16,7 +16,7 @@ router = APIRouter(prefix="/product")
 def create_company(company: CompanyBase, db: Session = Depends(get_db)):
     try:
         new_company = product_service.create_company(db, company)
-        return ApiResponse.response_ok(data=CompanyBase.model_validate(new_company).model_dump())
+        return ApiResponse.response_created(data=CompanyBase.model_validate(new_company).model_dump())
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
     except Exception as e:
@@ -62,7 +62,7 @@ def delete_company(company_id: UUID, db: Session = Depends(get_db)):
 def create_product_type(product_type: ProductType, db: Session = Depends(get_db)):
     try:
         new_product_type = product_service.create_product_type(db, product_type)
-        return ApiResponse.response_ok(data=ProductType.model_validate(new_product_type).model_dump())
+        return ApiResponse.response_created(data=ProductType.model_validate(new_product_type).model_dump())
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
     except Exception as e:
@@ -112,9 +112,12 @@ def create_product(product: Product, db: Session = Depends(get_db) , auth_token:
 
         payload = security.decode_access_token(token)
         # Extract the UUID of the tenant
-        user_id = payload.get('sub')
-        new_product = product_service.create_product(db, product , user_id)
-        return ApiResponse.response_ok(data=Product.model_validate(new_product).model_dump())
+        user_id = payload.get('user_id')
+
+        tenant_id = payload.get('tenant_id')
+        
+        new_product = product_service.create_product(db, product , user_id,tenant_id)
+        return ApiResponse.response_created(data=Product.model_validate(new_product).model_dump())
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
     except Exception as e:

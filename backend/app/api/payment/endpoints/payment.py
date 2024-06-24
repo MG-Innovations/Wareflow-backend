@@ -19,9 +19,12 @@ def create_payment(payment: Payment, db: Session = Depends(get_db) , auth_token:
 
         payload = security.decode_access_token(token)
         # Extract the UUID of the tenant
-        user_id = payload.get('sub')
-        new_payment = payment_service.create_payment(db, payment, user_id)
-        return ApiResponse.response_ok(data=Payment.model_validate(new_payment).model_dump())
+        user_id = payload.get('user_id')
+
+        tenant_id = payload.get('tenant_id')
+
+        new_payment = payment_service.create_payment(db, payment, user_id,tenant_id)
+        return ApiResponse.response_created(data=Payment.model_validate(new_payment).model_dump())
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
     except Exception as e:

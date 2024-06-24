@@ -46,7 +46,6 @@ class Product(BaseModel):
     selling_price: float
     image: str
     stock: int
-    tenant_id: UUID
     company_id: UUID
     product_type_id: UUID
 

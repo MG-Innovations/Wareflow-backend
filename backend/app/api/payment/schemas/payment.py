@@ -5,7 +5,6 @@ from uuid import UUID
 class Payment(BaseModel):
     amount_paid: float
     payment_type: str
-    tenant_id: UUID
     order_id: UUID
     description : str
 

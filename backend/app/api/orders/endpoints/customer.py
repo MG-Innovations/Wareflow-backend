@@ -24,12 +24,13 @@ async def create(db:Session = Depends(deps.get_db),data:CustomerCreate = Body(..
 
         payload = security.decode_access_token(token)
         # Extract the UUID of the tenant
-        user_id = payload.get('sub')
+        user_id = payload.get('user_id')
+        tenant_id = payload.get('tenant_id')
         
         customer_db_base = CustomerCreateInDb(
             name = data.name,
             phone_number = data.phone_number,
-            tenant_id = data.tenant_id,
+            tenant_id=tenant_id,
             created_by = user_id,
             updated_by = user_id
         )
@@ -39,7 +40,7 @@ async def create(db:Session = Depends(deps.get_db),data:CustomerCreate = Body(..
         if not base_customer:
             return ApiResponse.response_bad_request()
         
-        return ApiResponse.response_ok(
+        return ApiResponse.response_created(
                 data=CustomerBase.model_validate(base_customer).model_dump(),
         )
     except HTTPException as e:
