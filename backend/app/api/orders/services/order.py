@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 from app.api.orders.db_models.order import Order
 from app.api.orders.db_models.order_item import OrderItem
 from app.api.orders.schemas.order import OrderCreateInDb, OrderItemCreate
+from app.api.product.services.product import product_service
 from core import security
 
 class OrderService:
@@ -16,6 +17,11 @@ class OrderService:
 
     def create_order_with_items(self, db: Session, schema: OrderCreateInDb, items: List[OrderItemCreate]) -> Optional[Order]:
         # Create the Order instance
+        for item_schema in items:
+            product = product_service.get_product_by_id(db, item_schema.product_id)
+            if not product or product.stock < item_schema.quantity:
+                raise ValueError(f"Insufficient stock for product ID: {item_schema.product_id}")
+
         order = Order(
             tenant_id=schema.tenant_id,
             order_value=schema.order_value,
@@ -26,6 +32,7 @@ class OrderService:
 
         # Create OrderItem instances and add them to the order
         for item_schema in items:
+            product = product_service.get_product_by_id(db, item_schema.product_id)
             order_item = OrderItem(
                 product_id=item_schema.product_id,
                 order_id = order.id,
@@ -34,7 +41,8 @@ class OrderService:
                 tenant_id=schema.tenant_id
             )
             order.order_items.append(order_item)
-        
+            product.stock -= item_schema.quantity
+            db.add(product)
         # Add the order to the session and commit
         db.add(order)
         db.commit()

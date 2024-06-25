@@ -9,5 +9,6 @@ from app.api.product.db_models.company import Company
 from app.api.orders.db_models.customer import Customer
 from app.api.orders.db_models.order import Order
 from app.api.orders.db_models.order_item import OrderItem
+from app.api.payment.db_models.payment import Payment
 
 

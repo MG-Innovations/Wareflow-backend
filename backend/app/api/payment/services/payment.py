@@ -2,13 +2,25 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.api.payment.db_models.payment import Payment
+from app.api.orders.services.order import order as order_service
 from app.api.payment.schemas.payment import Payment as BaseProduct , PaymentDelete , PaymentGet , PaymentGetResponse , PaymentUpdate
 
 class PaymentService:
-
-    def create_payment(self, db: Session, payment: BaseProduct, user_id: UUID, tenant_id:UUID) -> Payment:
-        db_payment = Payment(**payment.model_dump(),tenant_id=tenant_id,user_id=user_id , created_by=user_id , updated_by=user_id)
+    
+    def create_payment(self, db: Session, payment: BaseProduct, user_id: UUID, tenant_id: UUID) -> Payment:
+        db_payment = Payment(**payment.model_dump(), tenant_id=tenant_id, user_id=user_id, created_by=user_id, updated_by=user_id)
         db.add(db_payment)
+        
+        # Retrieve and update the order's amount_received and status
+        order = order_service.get(db, payment.order_id)
+        if order:
+            order.amount_received += db_payment.amount_paid
+            if order.amount_received < order.order_value:
+                order.status = 'Partially Paid'
+            else:
+                order.status = 'Paid'
+            db.add(order)
+        
         db.commit()
         db.refresh(db_payment)
         return db_payment
