@@ -136,8 +136,10 @@ def get_product(product_id: UUID , db: Session = Depends(get_db)):
         return ApiResponse.response_internal_server_error(message=str(e))
     
 @router.get("/product", dependencies=[Depends(JWTBearer())])
-def get_all_products(db: Session = Depends(get_db)):
+def get_all_products(limit:int,offset:int,db: Session = Depends(get_db),auth_token: str = Depends(JWTBearer())):
     try:
+        tenant_id = security.decode_access_token(auth_token).get('tenant_id')
+        offset = offset*limit
         products = product_service.get_products(db)
         return ApiResponse.response_ok(data=[Product.model_validate(product).model_dump() for product in products])
     except HTTPException as e:

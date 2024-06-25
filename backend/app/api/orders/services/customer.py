@@ -9,8 +9,8 @@ class CustomerService:
     def get(self, db: Session,customer_id: UUID) -> Optional[Customer]:
         return db.query(Customer).filter(Customer.id == customer_id).first()
     
-    def get_all(self, db:Session)->List[Customer]:
-        return db.query(Customer).all();
+    def get_all(self, db:Session,tenant_id:UUID, skip:int=0,limit:int=10)->List[Customer]:
+        return db.query(Customer).filter_by(tenant_id=tenant_id).offset(skip).limit(limit).all();
 
     def create(self,db:Session,schema:CustomerCreateInDb)->Optional[Customer]:
         customer = Customer(
