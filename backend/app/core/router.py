@@ -6,6 +6,8 @@ from app.api.orders.endpoints import order
 from app.api.orders.endpoints import customer
 from app.api.product.endpoints import company
 from app.api.product.endpoints import product_type
+from app.api.transactions.endpoints import monthly
+from app.api.transactions.endpoints import weekly
 
 api_router = APIRouter()
 
@@ -17,4 +19,5 @@ api_router.include_router(product.router, tags=["product"])
 api_router.include_router(order.router, tags=["order"])
 api_router.include_router(customer.router, tags=["customer"])
 api_router.include_router(payment.router, tags=["payment"])
-
+api_router.include_router(weekly.router, tags=["weekly transactions"])
+api_router.include_router(monthly.router, tags=["monthly transactions"])
