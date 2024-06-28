@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.api.payment.db_models.payment import Payment
 from app.api.orders.services.order import order as order_service
+from app.core.enums import PaymentStatus
 from app.api.payment.schemas.payment import Payment as BaseProduct , PaymentDelete , PaymentGet , PaymentGetResponse , PaymentUpdate
 
 class PaymentService:
@@ -16,9 +17,9 @@ class PaymentService:
         if order:
             order.amount_received += db_payment.amount_paid
             if order.amount_received < order.order_value:
-                order.status = 'Partially Paid'
+                order.status = PaymentStatus.Partially_paid
             else:
-                order.status = 'Paid'
+                order.status = PaymentStatus.Paid
             db.add(order)
         
         db.commit()

@@ -1,10 +1,10 @@
 from typing import Optional
 from pydantic import BaseModel
 from uuid import UUID
-
+from app.core.enums import PaymentType
 class Payment(BaseModel):
     amount_paid: float
-    payment_type: str
+    payment_type: PaymentType 
     order_id: UUID
     description : str
 
