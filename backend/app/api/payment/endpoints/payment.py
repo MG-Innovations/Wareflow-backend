@@ -37,8 +37,6 @@ def create_payment(
         tenant_id = payload.get("tenant_id")
 
         new_payment = payment_service.create_payment(db, payment, user_id, tenant_id)
-        weekly_transactions.append(new_payment)
-        monthly_transactions.append(new_payment)
         return ApiResponse.response_created(
             data=Payment.model_validate(new_payment).model_dump()
         )

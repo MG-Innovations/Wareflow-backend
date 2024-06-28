@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.core.jwt import JWTBearer
 from app.api.deps import get_db
-from sqlalchemy import extract
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from app.api.transactions.db_models import weekly
 import datetime
 from app.api.payment.db_models.payment import Payment
 from app.core.api_response import ApiResponse
@@ -21,35 +20,25 @@ def get_weekly_transactions(
         token = auth_token
 
         payload = security.decode_access_token(token)
+        today = datetime.date.today()
+
+        # Calculate the start of the week (Monday)
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+
+        # Calculate the end of the week (Sunday)
+        end_of_week = start_of_week + datetime.timedelta(days=6)
         # Extract the UUID of the tenant
         tenant_id = payload.get("tenant_id")
-        if weekly.LAST_REFRESH_DATE is None:
-            refreshed_monthly_transactions = (
-                db.query(Payment)
-                .filter(
-                    Payment.tenant_id == tenant_id,
-                    extract("week", Payment.updated_at)
-                    == datetime.datetime.now().strftime("%U"),
-                )
-                .all()
+        refreshed_monthly_transactions = (
+            db.query(Payment)
+            .filter(
+                Payment.tenant_id == tenant_id,
+                and_(Payment.updated_at>=start_of_week,Payment.updated_at<=end_of_week),
             )
-            weekly.monthly_transactions = refreshed_monthly_transactions
-        elif weekly.LAST_REFRESH_DATE.strftime(
-            "%U"
-        ) != datetime.datetime.now().strftime("%U"):
-            refreshed_monthly_transactions = (
-                db.query(Payment)
-                .filter(
-                    Payment.tenant_id == tenant_id,
-                    extract("week", Payment.updated_at)
-                    == datetime.datetime.now().strftime("%U"),
-                )
-                .all()
-            )
-            weekly.LAST_REFRESH_DATE = datetime.datetime.now()
-            weekly.monthly_transactions = refreshed_monthly_transactions
+            .all()
+        )
 
-        return ApiResponse.response_ok(data=weekly.monthly_transactions)
+        return ApiResponse.response_ok(data=refreshed_monthly_transactions)
 
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
