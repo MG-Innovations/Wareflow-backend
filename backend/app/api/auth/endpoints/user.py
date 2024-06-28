@@ -86,7 +86,7 @@ def get_user(db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBea
         user_id = payload.get('sub')
         
         base_user = user.get_user(db, user_id)
-        logger.debug('User: %s', base_user);
+        logger.debug('User: %s', base_user)
         if not base_user:
             return ApiResponse.response_bad_request()
         

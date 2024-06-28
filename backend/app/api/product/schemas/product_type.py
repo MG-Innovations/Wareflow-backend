@@ -2,23 +2,18 @@ from typing import Optional
 from pydantic import BaseModel
 from uuid import UUID
 
-class Product(BaseModel):
+
+class ProductType(BaseModel):
     name: str
     description: str
-    buying_price: float
-    selling_price: float
-    image: str
-    stock: int
-    company_id: UUID
-    product_type_id: UUID
 
     class Config:
         from_attributes = True
 
 
-class ProductGet(BaseModel):
+class ProductTypeGet(BaseModel):
     id: UUID  # I want UUID here
 
 
-class ProductDelete(BaseModel):
+class ProductTypeDelete(BaseModel):
     id: UUID  # I want UUID here
