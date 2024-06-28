@@ -5,14 +5,14 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.db.base_class import Base
 from sqlalchemy.sql import func
-
+from app.core.enums import PaymentStatus, OrderStatus
 class Order(Base):
     __tablename__ = "Order"
     id = Column(UUID, primary_key=True, index=True, default=uuid.uuid4,)
     tenant_id = Column(UUID,ForeignKey('Tenant.id'),nullable=False)
     order_value = Column(Float, nullable=False)
     amount_received = Column(Float, nullable=True, default=0.0)
-    status = Column(String, nullable=True, default='Unpaid')
+    status = Column(String, nullable=True, default=PaymentStatus.Unpaid)
     customer_id = Column(UUID,ForeignKey('Customer.id'),nullable=False)
     created_by = Column(UUID, ForeignKey('User.id'),nullable=False)
     updated_by = Column(UUID, ForeignKey('User.id'),nullable=False)
