@@ -46,7 +46,7 @@ async def create(db:Session = Depends(deps.get_db),data:OrderCreate = Body(...),
         ]
     
     
-        base_order = order.create_order_with_items(db,order_db_base,order_items)
+        base_order = await order.create_order_with_items(db,order_db_base,order_items)
 
         if not base_order:
             return ApiResponse.response_bad_request()
@@ -62,7 +62,27 @@ async def create(db:Session = Depends(deps.get_db),data:OrderCreate = Body(...),
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
 
-    
+@router.get("/",dependencies=[Depends(JWTBearer())])
+def get_all(limit:int,offset:int,db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBearer())):
+    try:
+        tenant_id = security.decode_access_token(auth_token).get('tenant_id')
+        offset = offset*limit
+        base_orders = order.get_all(db,tenant_id=tenant_id,limit=limit,skip=offset)
+        if not base_orders:
+            return ApiResponse.response_bad_request()
+        
+        return ApiResponse.response_ok(
+            data=[OrderBase.model_validate(base_order).model_dump() for base_order in base_orders]
+        )
+    except HTTPException as e:
+        return ApiResponse.response_bad_request(
+            status=e.status_code,
+            message=e.detail,
+        )
+    except Exception as e:
+        return ApiResponse.response_internal_server_error(message=str(e))
+
+
 @router.get("/{order_id}",dependencies=[Depends(JWTBearer())])
 def get_user(order_id:UUID,db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBearer())):
     try:

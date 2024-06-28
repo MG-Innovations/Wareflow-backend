@@ -12,8 +12,8 @@ class OrderService:
     def get(self, db: Session, order_id: UUID) -> Optional[Order]:
         return db.query(Order).filter(Order.id == order_id).first()
     
-    def get_all(self, db: Session) -> List[Order]:
-        return db.query(Order).all()
+    def get_all(self, db: Session, tenant_id:UUID,skip:int = 0, limit:int=10) -> List[Order]:
+        return db.query(Order).filter_by(tenant_id=tenant_id).offset(skip).limit(limit).all()
 
     def create_order_with_items(self, db: Session, schema: OrderCreateInDb, items: List[OrderItemCreate]) -> Optional[Order]:
         # Create the Order instance

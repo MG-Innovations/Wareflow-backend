@@ -51,7 +51,30 @@ async def create(db:Session = Depends(deps.get_db),data:CustomerCreate = Body(..
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
 
-    
+@router.get("/",dependencies=[Depends(JWTBearer())])
+def get_all(limit:int,offset:int,db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBearer())):
+    try:
+        token = auth_token
+
+        payload = security.decode_access_token(token)
+        # Extract the UUID of the tenant
+        tenant_id = payload.get('tenant_id')
+        offset = offset*limit
+        base_customers = customer.get_all(db,tenant_id,offset,limit)
+        if not base_customers:
+            return ApiResponse.response_bad_request()
+        
+        return ApiResponse.response_ok(
+            data=[CustomerBase.model_validate(base_customer).model_dump() for base_customer in base_customers]
+        )
+    except HTTPException as e:
+        return ApiResponse.response_bad_request(
+            status=e.status_code,
+            message=e.detail,
+        )
+    except Exception as e:
+        return ApiResponse.response_internal_server_error(message=str(e))
+
 @router.get("/{customer_id}",dependencies=[Depends(JWTBearer())])
 def get_user(customer_id:UUID,db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBearer())):
     try:

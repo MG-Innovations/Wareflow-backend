@@ -57,8 +57,8 @@ class ProductService:
         db.refresh(db_product)
         return db_product
     
-    def get_products(self, db: Session) -> List[Product]:
-        return db.query(Product).all()
+    def get_products(self, db: Session,tenant_id:UUID,skip:int=0,limit:int=10) -> List[Product]:
+        return db.query(Product).filter_by(tenant_id=tenant_id).offset(skip).limit(limit).all()
     
     def get_product_by_id(self, db: Session, product_id: UUID) -> Optional[Product]:
         return db.query(Product).filter(Product.id == product_id).first()
