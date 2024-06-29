@@ -81,6 +81,31 @@ def get_all(limit:int,offset:int,db: Session = Depends(deps.get_db),auth_token: 
         )
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
+    
+@router.get("/unpaid_orders", dependencies=[Depends(JWTBearer())])
+def get_unpaid_orders(
+    limit: int,
+    offset: int,
+    db: Session = Depends(deps.get_db),
+    auth_token: str = Depends(JWTBearer())
+):
+    try:
+        tenant_id = security.decode_access_token(auth_token).get('tenant_id')
+        offset = offset * limit
+        unpaid_orders = order.get_unpaid_orders(db, tenant_id=tenant_id, limit=limit, skip=offset)
+        if not unpaid_orders:
+            return ApiResponse.response_bad_request()
+
+        return ApiResponse.response_ok(
+            data=[OrderBase.model_validate(unpaid_order).model_dump() for unpaid_order in unpaid_orders]
+        )
+    except HTTPException as e:
+        return ApiResponse.response_bad_request(
+            status=e.status_code,
+            message=e.detail,
+        )
+    except Exception as e:
+        return ApiResponse.response_internal_server_error(message=str(e))   
 
 
 @router.get("/{order_id}",dependencies=[Depends(JWTBearer())])
@@ -100,3 +125,5 @@ def get_user(order_id:UUID,db: Session = Depends(deps.get_db),auth_token: str = 
         )
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))    
+    
+    

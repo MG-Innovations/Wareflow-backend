@@ -14,8 +14,6 @@ from app.core.jwt import JWTBearer
 from app.core.api_response import ApiResponse
 from app.core import security
 from app.api.payment.services.payment import payment_service
-from app.api.transactions.db_models.weekly import weekly_transactions
-from app.api.transactions.db_models.monthly import monthly_transactions
 
 router = APIRouter(prefix="/payment")
 

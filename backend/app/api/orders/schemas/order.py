@@ -1,4 +1,5 @@
 
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 from app.api.orders.schemas.order_item import OrderItemBase 
@@ -10,6 +11,8 @@ class OrderBase(BaseModel):
     order_items: list[OrderItemBase]
     customer_id: UUID
     order_value: float
+    amount_received: Optional[float] = 0.0
+    status: str
     tenant_id: UUID
     created_by: UUID
     updated_by: UUID
