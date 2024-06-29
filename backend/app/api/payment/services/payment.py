@@ -24,7 +24,7 @@ class PaymentService:
             updated_by=user_id
         )
         db.add(db_payment)
-        
+
         # Retrieve and update the order's amount_received and status
         order = order_service.get(db, payment.order_id)
         if order:
@@ -34,7 +34,7 @@ class PaymentService:
             else:
                 order.status = PaymentStatus.Paid
             db.add(order)
-        
+
         db.commit()
         db.refresh(db_payment)
         return db_payment
