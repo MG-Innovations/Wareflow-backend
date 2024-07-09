@@ -55,7 +55,7 @@ async def signupUser(db:Session = Depends(deps.get_db),schema:UserCreate = Body(
         
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = security.create_access_token(
-            base_user.id, expires_delta=access_token_expires
+            base_user.id, tenant_id=schema.tenant_id,expires_delta=access_token_expires
         )
 
 

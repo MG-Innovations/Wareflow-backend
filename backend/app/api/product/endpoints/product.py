@@ -64,7 +64,7 @@ def get_all_products(limit:int,offset:int,db: Session = Depends(get_db),auth_tok
     try:
         tenant_id = security.decode_access_token(auth_token).get('tenant_id')
         offset = offset*limit
-        products = product_service.get_products(db)
+        products = product_service.get_products(db , tenant_id=tenant_id,skip=offset,limit=limit)
         return ApiResponse.response_ok(
             data=[Product.model_validate(product).model_dump() for product in products]
         )
