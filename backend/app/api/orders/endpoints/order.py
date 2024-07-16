@@ -11,6 +11,8 @@ from app.api.orders.schemas.order import OrderCreate,OrderCreateInDb, OrderItemC
 from app.core.api_response import ApiResponse
 from app.core.config import settings
 from app.core.jwt import JWTBearer
+from app.api.orders.services.customer import customer
+from app.api.orders.schemas.customer import CustomerBase
 
 
 router = APIRouter(prefix="/order")
@@ -63,17 +65,47 @@ async def create(db:Session = Depends(deps.get_db),data:OrderCreate = Body(...),
         return ApiResponse.response_internal_server_error(message=str(e))
 
 @router.get("/",dependencies=[Depends(JWTBearer())])
-def get_all(limit:int,offset:int,db: Session = Depends(deps.get_db),auth_token: str = Depends(JWTBearer())):
+def get_all(limit: int, offset: int, db: Session = Depends(deps.get_db), auth_token: str = Depends(JWTBearer())):
     try:
         tenant_id = security.decode_access_token(auth_token).get('tenant_id')
-        offset = offset*limit
-        base_orders = order.get_all(db,tenant_id=tenant_id,limit=limit,skip=offset)
+        offset = offset * limit
+        base_orders = order.get_all(db, tenant_id=tenant_id, limit=limit, skip=offset)
         if not base_orders:
             return ApiResponse.response_bad_request()
-        
-        return ApiResponse.response_ok(
-            data=[OrderBase.model_validate(base_order).model_dump() for base_order in base_orders]
-        )
+
+        orders_with_customer_info = []
+        completed_orders = 0
+        incomplete_orders = 0
+        total_revenue = 0
+
+        for base_order in base_orders:
+            customer_details = customer.get(db, base_order.customer_id)
+            order_data = OrderBase.model_validate(base_order).model_dump()
+            order_data['customer_details'] = CustomerBase.model_validate(customer_details).model_dump() if customer_details else None
+            order_data['order_items_count'] = len(base_order.order_items)
+
+            # Calculate completed and incomplete orders
+            if base_order.status.lower() == "paid":
+                completed_orders += 1
+            elif base_order.status.lower() in ["unpaid", "partially paid"]:
+                incomplete_orders += 1
+
+            # Add to total revenue
+            total_revenue += base_order.order_value
+
+            orders_with_customer_info.append(order_data)
+
+        total_orders = len(base_orders)
+
+        response_data = {
+            "orders": orders_with_customer_info,
+            "completed_orders": completed_orders,
+            "incomplete_orders": incomplete_orders,
+            "total_orders": total_orders,
+            "total_revenue": total_revenue
+        }
+
+        return ApiResponse.response_ok(data=response_data)
     except HTTPException as e:
         return ApiResponse.response_bad_request(
             status=e.status_code,
