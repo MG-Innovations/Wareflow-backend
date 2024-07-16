@@ -3,7 +3,7 @@ from app.core.jwt import JWTBearer
 from app.api.deps import get_db
 from sqlalchemy.orm import Session
 from app.core.api_response import ApiResponse
-from app.api.transactions.services.weekly import TransactionsService
+from app.api.transactions.services.transactions import TransactionsService
 
 router = APIRouter(prefix="/transactions")
 
@@ -15,7 +15,9 @@ def get_weekly_transactions(
     try:
         token = auth_token
         transactions_service = TransactionsService()
-        refreshed_weekly_transactions = transactions_service.get_weekly_transactions(db, token)
+        refreshed_weekly_transactions = transactions_service.get_weekly_transactions(
+            db, token
+        )
         return ApiResponse.response_ok(data=refreshed_weekly_transactions)
 
     except HTTPException as e:
@@ -31,7 +33,9 @@ def get_monthly_transactions(
     try:
         token = auth_token
         transactions_service = TransactionsService()
-        refreshed_monthly_transactions = transactions_service.get_monthly_transactions(db, token)
+        refreshed_monthly_transactions = transactions_service.get_monthly_transactions(
+            db, token
+        )
         return ApiResponse.response_ok(data=refreshed_monthly_transactions)
 
     except HTTPException as e:

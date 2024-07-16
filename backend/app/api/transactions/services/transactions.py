@@ -6,6 +6,7 @@ from typing import List, Optional
 from app.api.payment.db_models.payment import Payment
 from app.core import security
 
+
 class TransactionsService:
     def get_weekly_transactions(self, db: Session, token: str) -> List[Payment]:
         payload = security.decode_access_token(token)
@@ -40,7 +41,8 @@ class TransactionsService:
             db.query(Payment)
             .filter(
                 Payment.tenant_id == tenant_id,
-                extract("month", Payment.updated_at) == datetime.datetime.now().strftime("%m"),
+                extract("month", Payment.updated_at)
+                == datetime.datetime.now().strftime("%m"),
             )
             .all()
         )
