@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.jwt import JWTBearer
 from app.api.orders.services.customer import customer
 from app.api.orders.schemas.customer import CustomerBase
+from app.api.orders.db_models.order import Order
 
 
 router = APIRouter(prefix="/order")
@@ -78,6 +79,8 @@ def get_all(limit: int, offset: int, db: Session = Depends(deps.get_db), auth_to
         incomplete_orders = 0
         total_revenue = 0
 
+        all_orders_len = db.query(Order).all()
+
         for base_order in base_orders:
             customer_details = customer.get(db, base_order.customer_id)
             order_data = OrderBase.model_validate(base_order).model_dump()
@@ -95,7 +98,7 @@ def get_all(limit: int, offset: int, db: Session = Depends(deps.get_db), auth_to
 
             orders_with_customer_info.append(order_data)
 
-        total_orders = len(base_orders)
+        total_orders = len(all_orders_len)
 
         response_data = {
             "orders": orders_with_customer_info,
