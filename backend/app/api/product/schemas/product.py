@@ -10,7 +10,9 @@ class Product(BaseModel):
     image: str
     stock: int
     company_id: UUID
+    company: str
     product_type_id: UUID
+    product_type: str
 
     class Config:
         from_attributes = True

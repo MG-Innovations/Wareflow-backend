@@ -7,6 +7,7 @@ from app.api.product.db_models.product import Product
 from app.api.product.schemas.product import (
     Product as ProductSchema,
 )
+from sqlalchemy import select, and_, or_
 
 
 class ProductService:
@@ -18,16 +19,66 @@ class ProductService:
             **product.model_dump(),
             tenant_id=tenant_id,
             created_by=user_id,
-            updated_by=user_id
+            updated_by=user_id,
         )
         db.add(db_product)
         db.commit()
         db.refresh(db_product)
         return db_product
-    
-    def get_products(self, db: Session,tenant_id:UUID,skip:int=0,limit:int=10) -> List[Product]:
-        return db.query(Product).filter_by(tenant_id=tenant_id).offset(skip).limit(limit).all()
-    
+
+    def get_products(
+        self,
+        db: Session,
+        tenant_id: UUID,
+        search: str = "",
+        filter1: str = "",
+        filter2: str = "",
+    ) -> List[Product]:
+        filters = [Product.tenant_id == tenant_id]
+
+        if search:
+            filters.append(Product.name.like(f"%{search}%"))
+        if filter1:
+            filters.append(Company.name.like(f"%{filter1}%"))
+        if filter2:
+            filters.append(ProductType.name.like(f"%{filter2}%"))
+        stmt = (
+            select(
+                Product.id,
+                Product.name,
+                Product.description,
+                Product.buying_price,
+                Product.selling_price,
+                Product.image,
+                Product.stock,
+                Product.company_id,
+                Company.name.label("company_name"),
+                Product.product_type_id,
+                ProductType.name.label("product_type_name"),
+            )
+            .select_from(Product)
+            .join(Company, Product.company_id == Company.id)
+            .join(ProductType, Product.product_type_id == ProductType.id)
+        ).filter(and_(*filters))
+        results = db.execute(stmt)
+        products = []
+        for row in results:
+            data = {
+                "id": row.id,
+                "name": row.name,
+                "description": row.description,
+                "buying_price": row.buying_price,
+                "selling_price": row.selling_price,
+                "image": row.image,
+                "stock": row.stock,
+                "company_id": row.company_id,
+                "company": row.company_name,
+                "product_type_id": row.product_type_id,
+                "product_type": row.product_type_name,
+            }
+            products.append(data)
+        return products
+
     def get_product_by_id(self, db: Session, product_id: UUID) -> Optional[Product]:
         return db.query(Product).filter(Product.id == product_id).first()
 
@@ -38,5 +89,6 @@ class ProductService:
             db.commit()
             return product_id
         return None
+
 
 product_service = ProductService()
