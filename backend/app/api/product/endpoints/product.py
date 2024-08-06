@@ -4,7 +4,7 @@ from app.api.product.schemas.product import (
     ProductDelete,
 )
 from app.core import security
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.api.deps import get_db
@@ -12,6 +12,7 @@ from app.core.jwt import JWTBearer
 from app.core.api_response import ApiResponse
 from app.core import security
 from app.api.product.services.product import product_service
+from typing import Optional
 
 router = APIRouter(prefix="/product")
 
@@ -60,11 +61,18 @@ def get_product(product_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/product", dependencies=[Depends(JWTBearer())])
-def get_all_products(limit:int,offset:int,db: Session = Depends(get_db),auth_token: str = Depends(JWTBearer())):
+def get_all_products(
+    search: Optional[str] = Query(None),
+    filter1: Optional[str] = Query(None),
+    filter2: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    auth_token: str = Depends(JWTBearer()),
+):
     try:
-        tenant_id = security.decode_access_token(auth_token).get('tenant_id')
-        offset = offset*limit
-        products = product_service.get_products(db , tenant_id=tenant_id,skip=offset,limit=limit)
+        tenant_id = security.decode_access_token(auth_token).get("tenant_id")
+        products = product_service.get_products(
+            db, tenant_id=tenant_id, search=search, filter1=filter1, filter2=filter2
+        )
         return ApiResponse.response_ok(
             data=[Product.model_validate(product).model_dump() for product in products]
         )

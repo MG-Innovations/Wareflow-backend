@@ -4,6 +4,7 @@ from uuid import UUID
 
 
 class ProductType(BaseModel):
+    id: UUID
     name: str
     description: str
 
