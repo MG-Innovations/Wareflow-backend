@@ -7,12 +7,10 @@ class Product(BaseModel):
     description: str
     buying_price: float
     selling_price: float
-    image: str
+    image: Optional[str]
     stock: int
     company_id: UUID
-    company: str
     product_type_id: UUID
-    product_type: str
 
     class Config:
         from_attributes = True
@@ -24,3 +22,19 @@ class ProductGet(BaseModel):
 
 class ProductDelete(BaseModel):
     id: UUID  # I want UUID here
+
+
+class ProductGetDetailResponse(BaseModel):
+    name: str
+    description: str
+    buying_price: float
+    selling_price: float
+    image: str
+    stock: int
+    company_id: UUID
+    company: str
+    product_type_id: UUID
+    product_type: str
+
+    class Config:
+        from_attributes = True

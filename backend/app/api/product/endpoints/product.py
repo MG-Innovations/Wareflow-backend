@@ -1,7 +1,6 @@
 from app.api.product.schemas.product import (
     Product,
-    ProductGet,
-    ProductDelete,
+    ProductGetDetailResponse
 )
 from app.core import security
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -51,7 +50,7 @@ def get_product(product_id: UUID, db: Session = Depends(get_db)):
         product = product_service.get_product_by_id(db, product_id)
         if product:
             return ApiResponse.response_ok(
-                data=Product.model_validate(product).model_dump()
+                data=ProductGetDetailResponse.model_validate(product).model_dump()
             )
         return ApiResponse.response_not_found()
     except HTTPException as e:
@@ -74,7 +73,7 @@ def get_all_products(
             db, tenant_id=tenant_id, search=search, filter1=filter1, filter2=filter2
         )
         return ApiResponse.response_ok(
-            data=[Product.model_validate(product).model_dump() for product in products]
+            data=[ProductGetDetailResponse.model_validate(product).model_dump() for product in products]
         )
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)

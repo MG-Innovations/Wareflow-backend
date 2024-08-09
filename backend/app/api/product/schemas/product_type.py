@@ -4,7 +4,7 @@ from uuid import UUID
 
 
 class ProductType(BaseModel):
-    id: UUID
+    id: Optional[UUID]
     name: str
     description: str
 
@@ -13,8 +13,8 @@ class ProductType(BaseModel):
 
 
 class ProductTypeGet(BaseModel):
-    id: UUID  # I want UUID here
+    id: UUID
 
 
 class ProductTypeDelete(BaseModel):
-    id: UUID  # I want UUID here
+    id: UUID
