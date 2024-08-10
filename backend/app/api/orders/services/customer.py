@@ -9,7 +9,7 @@ from sqlalchemy import select, and_, or_
 
 class CustomerService:
 
-    def get(db: Session, customer_id: UUID) -> Optional[Customer]:
+    def get(self,db: Session, customer_id: UUID) -> Optional[Customer]:
         return db.query(Customer).filter(Customer.id == customer_id).first()
 
     def get_all(

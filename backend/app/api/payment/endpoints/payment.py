@@ -15,7 +15,7 @@ from app.core.api_response import ApiResponse
 from app.core import security
 from app.api.payment.services.payment import payment_service
 from app.api.orders.db_models.order import Order
-from app.api.orders.services.customer import CustomerService
+from app.api.orders.services.customer import customer
 
 router = APIRouter(prefix="/payment")
 
@@ -109,7 +109,7 @@ def get_all_payments_for_tenant(tenant_id: UUID, db: Session = Depends(get_db)):
             if order:
                 customer_id = order.customer_id
                 # Fetch the customer name using the customer_id
-                base_customer = CustomerService.get(db=db, customer_id=customer_id)  # Corrected method call
+                base_customer = customer.get(db, customer_id)
                 if base_customer:
                     customer_name = base_customer.name  # Assuming 'name' is the field for customer name
             
