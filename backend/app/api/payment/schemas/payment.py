@@ -21,6 +21,7 @@ class PaymentGetResponse(BaseModel):
     tenant_id: UUID
     order_id: UUID
     user_id: UUID
+    customer_name: Optional[str] = None
     description : str
     
     class Config:

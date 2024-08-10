@@ -14,6 +14,8 @@ from app.core.jwt import JWTBearer
 from app.core.api_response import ApiResponse
 from app.core import security
 from app.api.payment.services.payment import payment_service
+from app.api.orders.db_models.order import Order
+from app.api.orders.services.customer import CustomerService
 
 router = APIRouter(prefix="/payment")
 
@@ -93,13 +95,38 @@ def delete_payment(payment_id: UUID, db: Session = Depends(get_db)):
 def get_all_payments_for_tenant(tenant_id: UUID, db: Session = Depends(get_db)):
     try:
         payments = payment_service.get_all_payment_by_tenant_id(db, tenant_id)
-        if payments:
-            return ApiResponse.response_ok(
-                data=[
-                    PaymentGetResponse.model_validate(payment).model_dump()
-                    for payment in payments
-                ]
+        
+        # Fetch all relevant orders
+        order_ids = {payment.order_id for payment in payments}
+        orders = db.query(Order).filter(Order.id.in_(order_ids)).all()
+        order_map = {order.id: order for order in orders}
+
+        payment_responses = []
+        for payment in payments:
+            order = order_map.get(payment.order_id)
+            customer_name = None
+            
+            if order:
+                customer_id = order.customer_id
+                # Fetch the customer name using the customer_id
+                base_customer = CustomerService.get(db=db, customer_id=customer_id)  # Corrected method call
+                if base_customer:
+                    customer_name = base_customer.name  # Assuming 'name' is the field for customer name
+            
+            payment_response = PaymentGetResponse(
+                id=payment.id,
+                amount_paid=payment.amount_paid,
+                payment_type=payment.payment_type,
+                tenant_id=payment.tenant_id,
+                order_id=payment.order_id,
+                user_id=payment.user_id,
+                description=payment.description,
+                customer_name=customer_name  # Set customer_name here
             )
+            payment_responses.append(payment_response.model_dump())
+        
+        if payments:
+            return ApiResponse.response_ok(data=payment_responses)
         return ApiResponse.response_not_found()
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
