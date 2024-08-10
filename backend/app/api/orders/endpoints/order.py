@@ -117,6 +117,7 @@ def get_all(limit: int, offset: int, db: Session = Depends(deps.get_db), auth_to
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
     
+
 @router.get("/unpaid_orders", dependencies=[Depends(JWTBearer())])
 def get_unpaid_orders(
     db: Session = Depends(deps.get_db),
@@ -128,8 +129,20 @@ def get_unpaid_orders(
         if not unpaid_orders:
             return ApiResponse.response_bad_request()
 
+        orders_with_customer_info = []
+
+        for unpaid_order in unpaid_orders:
+            # Fetch the customer details using customer_id from the order
+            customer_details = customer.get(db, unpaid_order.customer_id)
+            order_data = OrderBase.model_validate(unpaid_order).model_dump()
+
+            # Add customer_name to the order data if customer details are found
+            order_data['customer_name'] = customer_details.name if customer_details else None
+
+            orders_with_customer_info.append(order_data)
+
         return ApiResponse.response_ok(
-            data=[OrderBase.model_validate(unpaid_order).model_dump() for unpaid_order in unpaid_orders]
+            data=orders_with_customer_info
         )
     except HTTPException as e:
         return ApiResponse.response_bad_request(
@@ -137,7 +150,7 @@ def get_unpaid_orders(
             message=e.detail,
         )
     except Exception as e:
-        return ApiResponse.response_internal_server_error(message=str(e))   
+        return ApiResponse.response_internal_server_error(message=str(e))
 
 
 @router.get("/{order_id}",dependencies=[Depends(JWTBearer())])
