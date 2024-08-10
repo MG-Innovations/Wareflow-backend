@@ -16,11 +16,11 @@ class OrderService:
     def get_all(self, db: Session, tenant_id:UUID,skip:int = 0, limit:int=10) -> List[Order]:
         return db.query(Order).filter_by(tenant_id=tenant_id).offset(skip).limit(limit).all()
     
-    def get_unpaid_orders(self, db: Session, tenant_id: UUID, skip: int = 0, limit: int = 10) -> List[Order]:
+    def get_unpaid_orders(self, db: Session, tenant_id: UUID) -> List[Order]:
         return db.query(Order).filter(
             Order.tenant_id == tenant_id,
             Order.status.in_([PaymentStatus.Unpaid, PaymentStatus.Partially_paid])
-        ).offset(skip).limit(limit).all()
+        ).all()
 
     def create_order_with_items(self, db: Session, schema: OrderCreateInDb, items: List[OrderItemCreate]) -> Optional[Order]:
         # Create the Order instance

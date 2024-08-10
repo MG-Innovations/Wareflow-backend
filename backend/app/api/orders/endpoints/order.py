@@ -119,15 +119,12 @@ def get_all(limit: int, offset: int, db: Session = Depends(deps.get_db), auth_to
     
 @router.get("/unpaid_orders", dependencies=[Depends(JWTBearer())])
 def get_unpaid_orders(
-    limit: int,
-    offset: int,
     db: Session = Depends(deps.get_db),
     auth_token: str = Depends(JWTBearer())
 ):
     try:
         tenant_id = security.decode_access_token(auth_token).get('tenant_id')
-        offset = offset * limit
-        unpaid_orders = order.get_unpaid_orders(db, tenant_id=tenant_id, limit=limit, skip=offset)
+        unpaid_orders = order.get_unpaid_orders(db, tenant_id=tenant_id)
         if not unpaid_orders:
             return ApiResponse.response_bad_request()
 
