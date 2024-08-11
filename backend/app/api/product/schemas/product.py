@@ -2,6 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 from uuid import UUID
 
+
 class Product(BaseModel):
     name: str
     description: str
@@ -25,6 +26,7 @@ class ProductDelete(BaseModel):
 
 
 class ProductGetDetailResponse(BaseModel):
+    id: UUID
     name: str
     description: str
     buying_price: float
