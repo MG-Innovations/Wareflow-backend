@@ -37,8 +37,8 @@ class PaymentService:
             if order.amount_received < order.order_value:
                 order.status = PaymentStatus.Partially_paid
             else:
-                order1.status = PaymentStatus.Paid
-            db.add(order1)
+                order.status = PaymentStatus.Paid
+            db.add(order)
 
         db.commit()
         db.refresh(db_payment)
