@@ -16,6 +16,7 @@ class OrderBase(BaseModel):
     tenant_id: UUID
     created_by: UUID
     updated_by: UUID
+    created_at: datetime
 
     class Config:
         from_attributes = True
