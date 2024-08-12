@@ -207,6 +207,7 @@ def get_order_details(order_id: UUID, db: Session = Depends(deps.get_db), auth_t
                 
                 # Create the detailed product response
                 product_detail = ProductGetDetailResponse(
+                    id=product.id,  # Include the 'id' field
                     name=product.name,
                     description=product.description,
                     buying_price=product.buying_price,
@@ -218,12 +219,12 @@ def get_order_details(order_id: UUID, db: Session = Depends(deps.get_db), auth_t
                     product_type_id=product.product_type_id,
                     product_type=product_type.name if product_type else "Unknown"
                 )
-                product_details.append(product_detail.model_dump())
+                product_details.append(product_detail.dict())
 
         # Structure the response data
-        order_data = OrderBase.model_validate(base_order).model_dump()
-        customer_data = CustomerBase.model_validate(base_customer).model_dump()
-        payment_data = [PaymentGetResponse.model_validate(payment).model_dump() for payment in payments]
+        order_data = OrderBase.model_validate(base_order).dict()
+        customer_data = CustomerBase.model_validate(base_customer).dict()
+        payment_data = [PaymentGetResponse.model_validate(payment).dict() for payment in payments]
 
         # Combine all the data into a single response
         response_data = {
@@ -241,5 +242,3 @@ def get_order_details(order_id: UUID, db: Session = Depends(deps.get_db), auth_t
         )
     except Exception as e:
         return ApiResponse.response_internal_server_error(message=str(e))
-
-    
