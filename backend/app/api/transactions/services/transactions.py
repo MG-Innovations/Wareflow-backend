@@ -25,8 +25,8 @@ class TransactionsService:
             db.query(Payment)
             .filter(
                 Payment.tenant_id == tenant_id,
-                Payment.updated_at >= start_of_week,
-                Payment.updated_at <= end_of_week,
+                Payment.created_at >= start_of_week,
+                Payment.created_at <= end_of_week,
             )
             .all()
         )
