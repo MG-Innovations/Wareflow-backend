@@ -9,6 +9,8 @@ from app.api.payment.schemas.payment import (
     PaymentGetResponse,
     PaymentUpdate,
 )
+from app.api.orders.services.order import order
+from app.core.enums import PaymentStatus
 
 
 class PaymentService:
@@ -24,17 +26,17 @@ class PaymentService:
             updated_by=user_id
         )
         db.add(db_payment)
-        
+
         # Retrieve and update the order's amount_received and status
-        order = order_service.get(db, payment.order_id)
-        if order:
-            order.amount_received += db_payment.amount_paid
-            if order.amount_received < order.order_value:
-                order.status = PaymentStatus.Partially_paid
+        order1 = order.get(db, payment.order_id)
+        if order1:
+            order1.amount_received += db_payment.amount_paid
+            if order1.amount_received < order1.order_value:
+                order1.status = PaymentStatus.Partially_paid
             else:
-                order.status = PaymentStatus.Paid
-            db.add(order)
-        
+                order1.status = PaymentStatus.Paid
+            db.add(order1)
+
         db.commit()
         db.refresh(db_payment)
         return db_payment
