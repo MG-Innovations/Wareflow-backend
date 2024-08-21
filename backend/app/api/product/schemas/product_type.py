@@ -16,6 +16,9 @@ class ProductTypeGet(BaseModel):
     id: UUID
     name: str
     description: str
+    
+    class Config:
+        from_attributes = True
 
 
 class ProductTypeDelete(BaseModel):
