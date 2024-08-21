@@ -50,7 +50,7 @@ def get_all_product_types(db: Session = Depends(get_db)):
         product_types = product_type_service.get_product_types(db)
         return ApiResponse.response_ok(
             data=[
-                ProductType.model_validate(product_type).model_dump()
+                ProductTypeGet.model_validate(product_type).model_dump()
                 for product_type in product_types
             ]
         )

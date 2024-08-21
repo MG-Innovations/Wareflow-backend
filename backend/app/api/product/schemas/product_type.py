@@ -11,8 +11,11 @@ class ProductType(BaseModel):
         from_attributes = True
 
 
+
 class ProductTypeGet(BaseModel):
     id: UUID
+    name: str
+    description: str
 
 
 class ProductTypeDelete(BaseModel):
