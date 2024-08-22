@@ -8,6 +8,7 @@ from app.api.product.endpoints import company
 from app.api.product.endpoints import product_type
 from app.api.transactions.endpoints import transactions
 from app.api.transactions.endpoints import orders
+from app.api.analytics.endpoints import analytics
 
 api_router = APIRouter()
 
@@ -21,3 +22,4 @@ api_router.include_router(customer.router, tags=["customer"])
 api_router.include_router(payment.router, tags=["payment"])
 api_router.include_router(transactions.router, tags=["transactions"])
 api_router.include_router(orders.router, tags=["orders"])
+api_router.include_router(analytics.router,tags=["analytics"])

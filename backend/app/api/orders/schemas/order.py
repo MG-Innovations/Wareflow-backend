@@ -17,10 +17,22 @@ class OrderBase(BaseModel):
     created_by: UUID
     updated_by: UUID
     created_at: datetime
-
+    
     class Config:
         from_attributes = True
 
+class OrderBase(BaseModel):
+    id: UUID
+    customer_id: UUID
+    order_value: float
+    amount_received: Optional[float] = 0.0
+    status: str
+    tenant_id: UUID
+    created_by: UUID
+    updated_by: UUID
+    created_at: datetime
+    class Config:
+        from_attributes = True
         
 class OrderItemCreateApi(BaseModel):
     product_id: UUID
