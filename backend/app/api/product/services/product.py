@@ -7,7 +7,7 @@ from app.api.product.db_models.product import Product
 from app.api.product.schemas.product import (
     Product as ProductSchema,
 )
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select, and_, or_,update
 
 
 class ProductService:
@@ -89,6 +89,36 @@ class ProductService:
             db.commit()
             return product_id
         return None
+    
+    def updateProduct(
+        self,
+        db:Session,
+        user_id:UUID,
+        product_id:UUID,
+        name:str,
+        description: str,
+        buying_price: float,
+        selling_price: float,
+        image: str,
+        stock: int,
+    ):
+     
+        update_values = {key: value for key, value in locals().items() 
+                        if key not in ['self', 'user_id','db','product_id'] and value is not None}
+                
+        update_values['updated_by'] = user_id 
+        
+        update_product_query = (
+            update(Product)
+            .where(Product.id == product_id)
+            .values(**update_values)
+        )
+        
+        db.execute(update_product_query)
+        db.commit()
+        return
+        
+        
 
 
 product_service = ProductService()

@@ -1,9 +1,10 @@
 from app.api.product.schemas.product import (
     Product,
-    ProductGetDetailResponse
+    ProductGetDetailResponse,
+    ProductUpdateRequest
 )
 from app.core import security
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.api.deps import get_db
@@ -16,10 +17,7 @@ from typing import Optional
 router = APIRouter(prefix="/product")
 
 
-# Product Endpoints
-
-
-@router.post("/product", dependencies=[Depends(JWTBearer())])
+@router.post("/", dependencies=[Depends(JWTBearer())])
 def create_product(
     product: Product,
     db: Session = Depends(get_db),
@@ -44,7 +42,7 @@ def create_product(
         return ApiResponse.response_internal_server_error(message=str(e))
 
 
-@router.get("/product/{product_id}", dependencies=[Depends(JWTBearer())])
+@router.get("/{product_id}", dependencies=[Depends(JWTBearer())])
 def get_product(product_id: UUID, db: Session = Depends(get_db)):
     try:
         product = product_service.get_product_by_id(db, product_id)
@@ -59,7 +57,7 @@ def get_product(product_id: UUID, db: Session = Depends(get_db)):
         return ApiResponse.response_internal_server_error(message=str(e))
 
 
-@router.get("/product", dependencies=[Depends(JWTBearer())])
+@router.get("/", dependencies=[Depends(JWTBearer())])
 def get_all_products(
     search: Optional[str] = Query(None),
     filter1: Optional[str] = Query(None),
@@ -81,7 +79,7 @@ def get_all_products(
         return ApiResponse.response_internal_server_error(message=str(e))
 
 
-@router.delete("/product/{product_id}", dependencies=[Depends(JWTBearer())])
+@router.delete("/{product_id}", dependencies=[Depends(JWTBearer())])
 def delete_product(product_id: UUID, db: Session = Depends(get_db)):
     try:
         product = product_service.get_product_by_id(db, product_id)
@@ -89,6 +87,33 @@ def delete_product(product_id: UUID, db: Session = Depends(get_db)):
             result = product_service.delete_product(db, product_id)
             return ApiResponse.response_ok(data=result)
         return ApiResponse.response_not_found()
+    except HTTPException as e:
+        return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
+    except Exception as e:
+        return ApiResponse.response_internal_server_error(message=str(e))
+    
+@router.put('/{product_id}',dependencies=[Depends(JWTBearer())])    
+def update_product(
+    product_id:UUID,
+    product_context:ProductUpdateRequest,
+    db: Session = Depends(get_db),
+    auth_token = Depends(JWTBearer()),
+):
+    try:
+        decoded_token = security.decode_access_token(auth_token)
+        user_id = decoded_token.get("user_id")
+        product_service.updateProduct(
+            db=db,
+            user_id=user_id, 
+            name=product_context.name,
+            description=product_context.description,
+            buying_price=product_context.buying_price,
+            selling_price=product_context.selling_price,
+            image=product_context.image,
+            stock=product_context.stock,
+            product_id=product_id
+        )
+        return ApiResponse.response_ok()
     except HTTPException as e:
         return ApiResponse.response_bad_request(status=e.status_code, message=e.detail)
     except Exception as e:

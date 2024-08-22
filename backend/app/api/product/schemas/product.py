@@ -16,7 +16,15 @@ class Product(BaseModel):
     class Config:
         from_attributes = True
 
-
+class ProductUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    buying_price: Optional[float] = None
+    selling_price: Optional[float] = None
+    image: Optional[str] = None
+    stock: Optional[int] = None
+    
+    
 class ProductGet(BaseModel):
     id: UUID  # I want UUID here
 
@@ -40,3 +48,7 @@ class ProductGetDetailResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        
+
+    
+    
