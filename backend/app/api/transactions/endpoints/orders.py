@@ -19,9 +19,6 @@ def get_weekly_orders(
         token = auth_token
         order_service = OrdersService()
         weekly_orders = order_service.get_weekly_orders(db, token)
-        
-        if not weekly_orders:
-            return ApiResponse.response_bad_request()
 
         orders_with_customer_info = []
 
@@ -31,13 +28,13 @@ def get_weekly_orders(
             order_data = OrderBase.model_validate(weekly_order).model_dump()
 
             # Add customer_name to the order data if customer details are found
-            order_data['customer_name'] = customer_details.name if customer_details else None
+            order_data["customer_name"] = (
+                customer_details.name if customer_details else None
+            )
 
             orders_with_customer_info.append(order_data)
 
-        return ApiResponse.response_ok(
-            data=orders_with_customer_info
-        )
+        return ApiResponse.response_ok(data=orders_with_customer_info)
     except HTTPException as e:
         return ApiResponse.response_bad_request(
             status=e.status_code,

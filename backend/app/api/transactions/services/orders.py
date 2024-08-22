@@ -16,14 +16,14 @@ class OrdersService:
             db.query(Order)
             .filter(
                 Order.tenant_id == tenant_id,
-                extract("month", Order.updated_at)
+                extract("month", Order.created_at)
                 == datetime.datetime.now().strftime("%m"),
             )
             .all()
         )
 
         return refreshed_monthly_transactions
-    
+
     def get_weekly_orders(self, db: Session, token: str) -> List[Order]:
         payload = security.decode_access_token(token)
         today = datetime.date.today()
@@ -41,8 +41,8 @@ class OrdersService:
             db.query(Order)
             .filter(
                 Order.tenant_id == tenant_id,
-                Order.updated_at >= start_of_week,
-                Order.updated_at <= end_of_week,
+                Order.created_at >= start_of_week,
+                Order.created_at <= end_of_week,
             )
             .all()
         )
