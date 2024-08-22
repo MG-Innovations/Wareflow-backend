@@ -41,7 +41,7 @@ class TransactionsService:
             db.query(Payment)
             .filter(
                 Payment.tenant_id == tenant_id,
-                extract("month", Payment.updated_at)
+                extract("month", Payment.created_at)
                 == datetime.datetime.now().strftime("%m"),
             )
             .all()
