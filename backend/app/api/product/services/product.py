@@ -98,6 +98,8 @@ class ProductService:
         name:str,
         description: str,
         buying_price: float,
+        product_type_id:UUID,
+        company_id:UUID,
         selling_price: float,
         image: str,
         stock: int,

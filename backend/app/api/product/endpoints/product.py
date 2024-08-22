@@ -111,7 +111,9 @@ def update_product(
             selling_price=product_context.selling_price,
             image=product_context.image,
             stock=product_context.stock,
-            product_id=product_id
+            product_id=product_id,
+            product_type_id=product_context.product_type_id,
+            company_id=product_context.company_id
         )
         return ApiResponse.response_ok()
     except HTTPException as e:

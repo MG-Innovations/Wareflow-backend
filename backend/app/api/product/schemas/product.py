@@ -23,6 +23,8 @@ class ProductUpdateRequest(BaseModel):
     selling_price: Optional[float] = None
     image: Optional[str] = None
     stock: Optional[int] = None
+    product_type_id: Optional[UUID] = None
+    company_id: Optional[UUID] = None
     
     
 class ProductGet(BaseModel):
