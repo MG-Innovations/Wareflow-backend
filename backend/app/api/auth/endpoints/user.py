@@ -75,13 +75,12 @@ async def signupUser(
         return ApiResponse.response_internal_server_error(message=str(e))
 
 
-@router.get("/{user_id}", dependencies=[Depends(JWTBearer())])
-def get_user(user_id: UUID, db: Session = Depends(deps.get_db)):
+@router.get("/", dependencies=[Depends(JWTBearer())])
+def get_user(db: Session = Depends(deps.get_db),auth_token:str=Depends(JWTBearer())):
     try:
-        # Decode the JWT token from Header\
-
+        token = security.decode_access_token(token=auth_token)
+        user_id = token.get("user_id")
         base_user = user.get_user(db, user_id)
-        logger.debug("User: %s", base_user)
         if not base_user:
             return ApiResponse.response_bad_request()
 
