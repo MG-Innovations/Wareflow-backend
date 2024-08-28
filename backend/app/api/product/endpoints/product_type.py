@@ -1,10 +1,11 @@
+from typing import Optional
 from app.api.product.schemas.product_type import (
     ProductType,
     ProductTypeGet,
     ProductTypeDelete,
 )
 from app.core import security
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.api.deps import get_db
@@ -45,9 +46,11 @@ def get_product_type(product_type_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/", dependencies=[Depends(JWTBearer())])
-def get_all_product_types(db: Session = Depends(get_db)):
+def get_all_product_types(
+    query:Optional[str] = Query(""),
+    db: Session = Depends(get_db)):
     try:
-        product_types = product_type_service.get_product_types(db)
+        product_types = product_type_service.get_product_types(db,query=query)
         return ApiResponse.response_ok(
             data=[
                 ProductTypeGet.model_validate(product_type).model_dump()

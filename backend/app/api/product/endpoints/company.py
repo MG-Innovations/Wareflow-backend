@@ -1,3 +1,4 @@
+from typing import Optional
 from app.api.product.schemas.company import (
     CompanyBase,
     CompanyGet,
@@ -5,7 +6,7 @@ from app.api.product.schemas.company import (
     CompanyGetResponse,
 )
 from app.core import security
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.api.deps import get_db
@@ -47,9 +48,11 @@ def get_company(company_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/", dependencies=[Depends(JWTBearer())])
-def get_all_companies(db: Session = Depends(get_db)):
+def get_all_companies(
+    query:Optional[str] = Query(""),
+    db: Session = Depends(get_db)):
     try:
-        companies = company_service.get_companies(db)
+        companies = company_service.get_companies(db,query=query)
         return ApiResponse.response_ok(
             data=[
                 CompanyGetResponse.model_validate(company).model_dump()

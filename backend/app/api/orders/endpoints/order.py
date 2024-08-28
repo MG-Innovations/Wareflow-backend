@@ -1,8 +1,8 @@
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import UUID
 from app.core.logging import logger
-from fastapi import APIRouter, Depends, HTTPException, Body, Header
+from fastapi import APIRouter, Depends, HTTPException, Body, Header, Query
 from sqlalchemy.orm import Session  # type: ignore
 from app.core import security
 from app.api import deps
@@ -25,6 +25,7 @@ from app.api.product.schemas.product import ProductGetDetailResponse
 from app.api.product.services.product import ProductService
 from app.api.product.services.company import CompanyService 
 from app.api.product.services.product_type import ProductTypeService
+from app.api.orders.db_models.customer import Customer
 
 
 router = APIRouter(prefix="/order")
@@ -82,15 +83,13 @@ async def create(
 
 @router.get("/", dependencies=[Depends(JWTBearer())])
 def get_all(
-    limit: int,
-    offset: int,
+    query:Optional[str] = Query(""),
     db: Session = Depends(deps.get_db),
     auth_token: str = Depends(JWTBearer()),
 ):
     try:
         tenant_id = security.decode_access_token(auth_token).get("tenant_id")
-        offset = offset * limit
-        base_orders = order.get_all(db, tenant_id=tenant_id, limit=limit, skip=offset)
+        base_orders = order.get_all(db, tenant_id=tenant_id,query=query)
         if not base_orders:
             return ApiResponse.response_bad_request()
 
@@ -98,7 +97,9 @@ def get_all(
         completed_orders = 0
         incomplete_orders = 0
         total_revenue = 0
-
+        
+        
+        
         all_orders_len = db.query(Order).all()
 
         for base_order in base_orders:

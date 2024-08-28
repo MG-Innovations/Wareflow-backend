@@ -61,8 +61,7 @@ async def create(
 
 @router.get("/", dependencies=[Depends(JWTBearer())])
 def get_all(
-    search: Optional[str] = Query(None),
-    filter1: Optional[str] = Query(None),
+    query: Optional[str] = Query(""),
     db: Session = Depends(deps.get_db),
     auth_token: str = Depends(JWTBearer()),
 ):
@@ -72,7 +71,7 @@ def get_all(
         payload = security.decode_access_token(token)
         # Extract the UUID of the tenant
         tenant_id = payload.get("tenant_id")
-        base_customers = customer.get_all(db, tenant_id,search=search,filter1=filter1)
+        base_customers = customer.get_all(db, tenant_id,search=query)
         if not base_customers:
             return ApiResponse.response_bad_request()
 

@@ -1,3 +1,4 @@
+from typing import Optional
 from app.api.payment.schemas.payment import (
     Payment,
     PaymentDelete,
@@ -6,7 +7,7 @@ from app.api.payment.schemas.payment import (
     PaymentUpdate,
 )
 from app.core import security
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.api.deps import get_db
@@ -92,9 +93,13 @@ def delete_payment(payment_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/payment/tenant/{tenant_id}", dependencies=[Depends(JWTBearer())])
-def get_all_payments_for_tenant(tenant_id: UUID, db: Session = Depends(get_db)):
+def get_all_payments_for_tenant(
+    tenant_id: UUID, 
+    db: Session = Depends(get_db),
+    query:Optional[str] = Query("")
+):
     try:
-        payments = payment_service.get_all_payment_by_tenant_id(db, tenant_id)
+        payments = payment_service.get_all_payment_by_tenant_id(db, tenant_id,query=query)
         
         # Fetch all relevant orders
         order_ids = {payment.order_id for payment in payments}

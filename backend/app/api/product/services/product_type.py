@@ -17,8 +17,8 @@ class ProductTypeService:
         db.refresh(db_product_type)
         return db_product_type
 
-    def get_product_types(self, db: Session) -> List[ProductType]:
-        return db.query(ProductType).all()
+    def get_product_types(self, db: Session,query:str) -> List[ProductType]:
+        return db.query(ProductType).where(ProductType.name.like(f"%{query}%")).all()
 
     def get_product_type_by_id(
         self, db: Session, product_type_id: UUID

@@ -17,13 +17,9 @@ class CustomerService:
         db: Session,
         tenant_id: UUID,
         search: str = "",
-        filter1: str = "",
     ) -> List[Customer]:
         filters = [Customer.tenant_id == tenant_id]
-        if search:
-            filters.append(Customer.name.like(f"{search}"))
-        if filter1:
-            filters.append(Customer.phone_number.like(f"{filter1}"))
+        filters.append(Customer.name.like(f"%{search}%"))
         stmt = (
             select(
                 Customer.id,

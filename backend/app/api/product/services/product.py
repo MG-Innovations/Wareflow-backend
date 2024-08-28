@@ -31,17 +31,10 @@ class ProductService:
         db: Session,
         tenant_id: UUID,
         search: str = "",
-        filter1: str = "",
-        filter2: str = "",
+
     ) -> List[Product]:
         filters = [Product.tenant_id == tenant_id]
-
-        if search:
-            filters.append(Product.name.like(f"%{search}%"))
-        if filter1:
-            filters.append(Company.name.like(f"%{filter1}%"))
-        if filter2:
-            filters.append(ProductType.name.like(f"%{filter2}%"))
+        filters.append(Product.name.like(f"%{search}%"))
         stmt = (
             select(
                 Product.id,
@@ -59,6 +52,7 @@ class ProductService:
             .select_from(Product)
             .join(Company, Product.company_id == Company.id)
             .join(ProductType, Product.product_type_id == ProductType.id)
+            .limit(40)
         ).filter(and_(*filters))
         results = db.execute(stmt)
         products = []

@@ -5,6 +5,7 @@ from app.api.orders.db_models.order import Order
 from app.api.orders.db_models.order_item import OrderItem
 from app.api.orders.schemas.order import OrderCreateInDb, OrderItemCreate
 from app.api.product.services.product import product_service
+from app.api.orders.db_models.customer import Customer
 from core import security
 from core.enums import PaymentStatus
 
@@ -13,8 +14,10 @@ class OrderService:
     def get(self, db: Session, order_id: UUID) -> Optional[Order]:
         return db.query(Order).filter(Order.id == order_id).first()
     
-    def get_all(self, db: Session, tenant_id:UUID,skip:int = 0, limit:int=10) -> List[Order]:
-        return db.query(Order).filter_by(tenant_id=tenant_id).offset(skip).limit(limit).all()
+    def get_all(self, db: Session, tenant_id:UUID,query:str="") -> List[Order]:
+        query_customers = db.query(Customer).where(Customer.name.like(f"%{query}%")).all()
+        customer_ids = [str(customer.id) for customer in query_customers]
+        return db.query(Order).filter_by(tenant_id=tenant_id).where(Order.customer_id.in_(customer_ids)).limit(40).all()
     
     def get_unpaid_orders(self, db: Session, tenant_id: UUID) -> List[Order]:
         return db.query(Order).filter(
