@@ -12,14 +12,4 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/app:/code/app
-
-networks:
-  caddy_network:
-    driver: bridge
-
-volumes:
-  caddy_data:
-  caddy_config: 
-  pg_data:
-  pg_logs:   
+      - ./backend/app:/code/app 
