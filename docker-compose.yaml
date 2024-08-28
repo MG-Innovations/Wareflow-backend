@@ -13,40 +13,6 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/app:/code/app
-    networks:
-      - caddy_network
-          # Map the app directory correctly
-  db:
-    container_name: bacardi
-    image: "postgres:14.5-alpine"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - 5432:5432
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-      - pg_logs:/var/log/postgresql
-    restart: unless-stopped
-    networks:
-      - caddy_network
-  
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    container_name: caddy
-    build:
-      context: ./caddy
-      dockerfile: Dockerfile.caddy
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - caddy_network  
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
 
 networks:
   caddy_network:
