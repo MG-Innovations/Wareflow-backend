@@ -30,6 +30,7 @@ class CustomerService:
                 Customer.updated_by,
             )
             .select_from(Customer)
+            .limit(40)
             .filter(and_(*filters))
         )
         results = db.execute(stmt)

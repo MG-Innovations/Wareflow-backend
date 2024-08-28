@@ -19,7 +19,7 @@ class CompanyService:
         return db.query(Company).filter(Company.id == company_id).first()
 
     def get_companies(self, db: Session,query:str) -> List[Company]:
-        return db.query(Company).where(Company.name.like(f"%{query}%")).all()
+        return db.query(Company).where(Company.name.like(f"%{query}%")).limit(40).all()
 
     def delete_company(self, db: Session, company_id: UUID) -> Optional[UUID]:
         company = db.query(Company).filter(Company.id == company_id).first()

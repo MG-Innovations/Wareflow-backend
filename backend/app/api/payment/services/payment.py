@@ -63,7 +63,7 @@ class PaymentService:
             query_orders = db.query(Order).where(Order.tenant_id == tenant_id,Order.customer_id.in_(customer_ids)).all()
             order_ids = [str(order.id) for order in query_orders]
             print(f"Orders ID: {order_ids}")
-            return db.query(Payment).where(Payment.tenant_id == tenant_id,Payment.order_id.in_(order_ids)).all()
+            return db.query(Payment).where(Payment.tenant_id == tenant_id,Payment.order_id.in_(order_ids)).limit(40).all()
         except Exception as e:
             print(f"Error {e}")
     def get_all_payment_by_order_id(

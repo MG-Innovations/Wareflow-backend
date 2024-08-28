@@ -18,7 +18,7 @@ class ProductTypeService:
         return db_product_type
 
     def get_product_types(self, db: Session,query:str) -> List[ProductType]:
-        return db.query(ProductType).where(ProductType.name.like(f"%{query}%")).all()
+        return db.query(ProductType).where(ProductType.name.like(f"%{query}%")).limit(40).all()
 
     def get_product_type_by_id(
         self, db: Session, product_type_id: UUID
