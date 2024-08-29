@@ -83,15 +83,23 @@ async def create(
 
 @router.get("/", dependencies=[Depends(JWTBearer())])
 def get_all(
+    start_date:Optional[str] = None,
+    end_date:Optional[str] = None,
     query:Optional[str] = Query(""),
     db: Session = Depends(deps.get_db),
     auth_token: str = Depends(JWTBearer()),
 ):
     try:
         tenant_id = security.decode_access_token(auth_token).get("tenant_id")
-        base_orders = order.get_all(db, tenant_id=tenant_id,query=query)
+        base_orders = order.get_all(
+            db, 
+            tenant_id=tenant_id,
+            query=query,
+            start_date=start_date,
+            end_date=end_date
+        )
         if not base_orders:
-            return ApiResponse.response_bad_request()
+            return ApiResponse.response_not_found(data=[])
 
         orders_with_customer_info = []
         completed_orders = 0

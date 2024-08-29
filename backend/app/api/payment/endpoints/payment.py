@@ -94,12 +94,20 @@ def delete_payment(payment_id: UUID, db: Session = Depends(get_db)):
 
 @router.get("/payment/tenant/{tenant_id}", dependencies=[Depends(JWTBearer())])
 def get_all_payments_for_tenant(
-    tenant_id: UUID, 
+    tenant_id: UUID,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
     db: Session = Depends(get_db),
     query:Optional[str] = Query("")
 ):
     try:
-        payments = payment_service.get_all_payment_by_tenant_id(db, tenant_id,query=query)
+        payments = payment_service.get_all_payment_by_tenant_id(
+            db, 
+            tenant_id,
+            query=query,   
+            start_date=start_date,
+            end_date=end_date,
+        )
         
         # Fetch all relevant orders
         order_ids = {payment.order_id for payment in payments}

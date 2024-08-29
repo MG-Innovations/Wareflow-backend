@@ -30,11 +30,20 @@ class ProductService:
         self,
         db: Session,
         tenant_id: UUID,
-        search: str = "",
+        product_type_id: UUID = None,
+        company_id: UUID = None,
+        search: str = None,
 
     ) -> List[Product]:
         filters = [Product.tenant_id == tenant_id]
-        filters.append(Product.name.like(f"%{search}%"))
+        if search:
+            filters.append(Product.name.like(f"%{search}%"))
+        
+        if product_type_id:
+            filters.append(Product.product_type_id == product_type_id)
+        
+        if company_id:
+            filters.append(Product.company_id == company_id)        
         stmt = (
             select(
                 Product.id,

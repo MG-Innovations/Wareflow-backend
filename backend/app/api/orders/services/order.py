@@ -6,7 +6,7 @@ from app.api.orders.db_models.order_item import OrderItem
 from app.api.orders.schemas.order import OrderCreateInDb, OrderItemCreate
 from app.api.product.services.product import product_service
 from app.api.orders.db_models.customer import Customer
-from core import security
+from datetime import datetime
 from core.enums import PaymentStatus
 
 class OrderService:
@@ -14,10 +14,34 @@ class OrderService:
     def get(self, db: Session, order_id: UUID) -> Optional[Order]:
         return db.query(Order).filter(Order.id == order_id).first()
     
-    def get_all(self, db: Session, tenant_id:UUID,query:str="") -> List[Order]:
-        query_customers = db.query(Customer).where(Customer.name.like(f"%{query}%")).all()
-        customer_ids = [str(customer.id) for customer in query_customers]
-        return db.query(Order).filter_by(tenant_id=tenant_id).where(Order.customer_id.in_(customer_ids)).limit(40).all()
+    def get_all(self, 
+            db: Session, 
+            tenant_id: UUID, 
+            start_date: str, 
+            end_date: str, 
+            query: str = None) -> List[Order]:
+        
+        filters = [Order.tenant_id == tenant_id]
+        if query:
+            query_customers = db.query(Customer).filter(Customer.name.ilike(f"%{query}%")).all()
+            customer_ids =[str(customer.id) for customer in query_customers]
+            if customer_ids:
+                filters.append(Order.customer_id.in_(customer_ids))
+        
+        
+        if start_date and end_date:
+            start_date_obj = datetime.strptime(start_date,'%Y-%m-%d %H:%M:%S')
+            end_date_obj = datetime.strptime(end_date,'%Y-%m-%d %H:%M:%S')
+            filters.append(Order.created_at.between(start_date_obj, end_date_obj))
+        
+        orders = (
+            db.query(Order)
+            .filter(*filters)
+            .limit(40)
+            .all()
+        )
+
+        return orders
     
     def get_unpaid_orders(self, db: Session, tenant_id: UUID) -> List[Order]:
         return db.query(Order).filter(

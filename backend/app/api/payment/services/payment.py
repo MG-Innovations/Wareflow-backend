@@ -53,19 +53,20 @@ class PaymentService:
         return db.query(Payment).all()
 
     def get_all_payment_by_tenant_id(
-        self, db: Session, tenant_id: UUID,query:str
+        self, db: Session, tenant_id: UUID,query:str,start_date:str,end_date:str
     ) -> List[Payment]:
-        try:
-            print(f"Query: {query}")
+        filters = [Payment.tenant_id == tenant_id]
+        if query:
             query_customers = db.query(Customer).where(Customer.tenant_id == tenant_id,Customer.name.like(f"%{query}%")).all()
             customer_ids = [str(customer.id) for customer in query_customers]
-            print(f"Customer ID: {customer_ids}")
             query_orders = db.query(Order).where(Order.tenant_id == tenant_id,Order.customer_id.in_(customer_ids)).all()
             order_ids = [str(order.id) for order in query_orders]
-            print(f"Orders ID: {order_ids}")
-            return db.query(Payment).where(Payment.tenant_id == tenant_id,Payment.order_id.in_(order_ids)).limit(40).all()
-        except Exception as e:
-            print(f"Error {e}")
+            filters.append(Payment.order_id.in_(order_ids))
+        if(start_date and end_date):
+            filters.append(Payment.created_at.between(start_date, end_date))    
+        return db.query(Payment).filter(*filters).limit(40).all()
+    
+    
     def get_all_payment_by_order_id(
         self, db: Session, order_id: UUID, tenant_id: UUID
     ) -> List[Payment]:
