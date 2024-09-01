@@ -19,9 +19,12 @@ class OrderService:
             tenant_id: UUID, 
             start_date: str, 
             end_date: str, 
-            query: str = None) -> List[Order]:
+            query: str = None,
+            type: str = None) -> List[Order]:
         
         filters = [Order.tenant_id == tenant_id]
+        if type:
+            filters.append(Order.status==type)
         if query:
             query_customers = db.query(Customer).filter(Customer.name.ilike(f"%{query}%")).all()
             customer_ids =[str(customer.id) for customer in query_customers]

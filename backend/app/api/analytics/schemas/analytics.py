@@ -11,4 +11,8 @@ class AnanlyticResponse(BaseModel):
     total_customers:int
     total_products: int
     total_profit:float
+    unpaid_orders: int | None
+    monthly_revenue: float | None
+    received_money: float | None
+    remaining_money: float
     recent_orders:List[OrderBase]

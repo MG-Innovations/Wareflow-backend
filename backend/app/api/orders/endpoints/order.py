@@ -86,6 +86,7 @@ def get_all(
     start_date:Optional[str] = None,
     end_date:Optional[str] = None,
     query:Optional[str] = Query(""),
+    type: Optional[str] = Query(""),
     db: Session = Depends(deps.get_db),
     auth_token: str = Depends(JWTBearer()),
 ):
@@ -96,7 +97,8 @@ def get_all(
             tenant_id=tenant_id,
             query=query,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            type=type
         )
         if not base_orders:
             return ApiResponse.response_not_found(data=[])
